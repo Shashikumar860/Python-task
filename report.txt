@@ -1,0 +1,6 @@
+Name,Marks,Grade
+praween,72,C
+charan,36,E
+anirudh,90,B
+vinod,84,B
+reddy,8,E
