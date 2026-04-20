@@ -1,3 +1,14 @@
+"""9. Smart Data Processing Pipeline
+Scenario:
+A system processes numeric data from file.
+Task:
+● Read numbers from a file
+● Use NumPy for calculations (mean, std)
+● Convert results to Pandas DataFrame
+● Use exception handling for bad data
+● Use a generator to stream data
+● Apply decorator to measure execution time"""
+
 import numpy as np
 import pandas as pd
 import time

@@ -1,3 +1,13 @@
+"""4. Basic File Logger
+Scenario:
+A system logs user actions.
+Task:
+● Take user input
+● Store logs in a file
+● Use loop to allow multiple entries
+● Handle file errors using exception handling
+"""
+
 try:
     with open("log.txt","a") as file:
         while True:

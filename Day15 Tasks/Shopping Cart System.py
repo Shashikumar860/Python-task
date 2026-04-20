@@ -1,3 +1,11 @@
+"""3. Shopping Cart System
+Scenario: A user adds items to a shopping cart.
+Task:
+● Store items in a list
+● Convert to set to remove duplicates
+● Use loop + condition to calculate total cost
+● Handle invalid input using try-except"""
+
 # Price list of items
 price_list = {
     "apple": 90,

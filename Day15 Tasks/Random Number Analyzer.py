@@ -1,3 +1,13 @@
+"""2. Random Number Analyzer
+Scenario:
+A system generates random numbers for testing.
+Task:
+● Use random to generate 10 numbers
+● Store in a list
+● Use loop + condition to count even/odd numbers
+● Use set to remove duplicates
+"""
+
 import random
 lst=[random.randint(1,10) for i in range(10)]
 print(lst)

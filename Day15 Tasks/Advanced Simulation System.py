@@ -1,3 +1,16 @@
+"""10. Advanced Simulation System
+Scenario:
+Simulate exam results and generate reports.
+Task:
+● Generate random marks using random
+● Store in NumPy array
+● Convert to Pandas DataFrame
+● Use OOP to represent Student
+● Use conditions + loops to assign grades
+● Save report to file
+● Handle errors using try-except
+● Use math module for statistics"""
+
 import numpy as np
 import pandas as pd
 import math
