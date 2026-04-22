@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-
+#===============================================================================
 #Scenario 1: Basic Data Loading & Cleaning
+#===============================================================================
 """Tasks:
 1. Load the dataset into a Pandas DataFrame.
 2. Display the first 5 rows and column names.
@@ -25,7 +26,9 @@ print(df.fillna(0))
 guage_columns = ['Broad Gauge', 'Metre Gauge', 'Narrow Gauge', 'Total']
 df[guage_columns] = df[guage_columns].apply(pd.to_numeric, errors='coerce').fillna(0) #errors='coerce' → converts invalid values to NaN
 
+#===============================================================================
 #Scenario 2: Simple Visualization
+#===============================================================================
 """�� Tasks:
 1. Extract Year and Total columns.
 2. Plot a line graph showing Total tracks over years.
@@ -55,8 +58,9 @@ elif total.iloc[-1] < total.iloc[0]:
 else:
     print("Trend is Stable")
 
+#===============================================================================
 #Scenario 3: Filtering + Bar Chart
-
+#===============================================================================
 """�� Tasks:
 1. Filter the dataset for years after 2000.
 2. Select Broad Gauge, Metre Gauge, and Narrow Gauge.
@@ -87,7 +91,9 @@ gauges_dominant = df_filter[['Broad Gauge', 'Metre Gauge', 'Narrow Gauge']].mean
 dominant = gauges_dominant.idxmax()  #idmax selcts index with column highest value
 print("gauge Dominant:",dominant)
 
+#===============================================================================
 #Scenario 4: Feature Engineering + Pie Chart
+#===============================================================================
 
 """�� Tasks:
 1. Calculate total sum of each gauge across all years.
@@ -113,8 +119,9 @@ plt.show()
 #interpret gauges
 print("Highest contribution:", total_sum.idxmax())
 
+#===============================================================================
 #Scenario 5: Advanced Analysis + Multiple Graphs
-
+#===============================================================================
 """�� Tasks:
 1. Create new columns:
 ○ % Broad Gauge
