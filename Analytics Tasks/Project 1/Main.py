@@ -1,3 +1,12 @@
+
+# ============================================================
+# Project Title: Railway Gauge Data Analysis
+# Analyze railway gauge dataset using NumPy, Pandas, Matplotlib
+# ============================================================
+
+# ============================================================
+# 📦 1. Import Required Libraries
+# ============================================================
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -29,7 +38,7 @@ df[guage_columns] = df[guage_columns].apply(pd.to_numeric, errors='coerce').fill
 #===============================================================================
 #Scenario 2: Simple Visualization
 #===============================================================================
-"""�� Tasks:
+"""Tasks:
 1. Extract Year and Total columns.
 2. Plot a line graph showing Total tracks over years.
 3. Add:
@@ -61,7 +70,7 @@ else:
 #===============================================================================
 #Scenario 3: Filtering + Bar Chart
 #===============================================================================
-"""�� Tasks:
+"""Tasks:
 1. Filter the dataset for years after 2000.
 2. Select Broad Gauge, Metre Gauge, and Narrow Gauge.
 3. Plot a grouped bar chart comparing all three gauges.
@@ -95,7 +104,7 @@ print("gauge Dominant:",dominant)
 #Scenario 4: Feature Engineering + Pie Chart
 #===============================================================================
 
-"""�� Tasks:
+"""Tasks:
 1. Calculate total sum of each gauge across all years.
 2. Create a new structure (Series/DataFrame) for totals.
 3. Plot a pie chart showing percentage contribution.
@@ -122,7 +131,7 @@ print("Highest contribution:", total_sum.idxmax())
 #===============================================================================
 #Scenario 5: Advanced Analysis + Multiple Graphs
 #===============================================================================
-"""�� Tasks:
+"""�Tasks:
 1. Create new columns:
 ○ % Broad Gauge
 ○ % Metre Gauge
@@ -135,7 +144,7 @@ print("Highest contribution:", total_sum.idxmax())
 ○ Years with highest growth
 ○ Decline in any gauge
 5. Provide a final conclusion:
-�� “Is the railway system shifting towards a single dominant gauge?” """
+“Is the railway system shifting towards a single dominant gauge?” """
 
 # Total tracks per year
 df["Year_num"] = df["Year"].astype(str).str[:4].astype(int)
