@@ -18,13 +18,12 @@ from matplotlib import pyplot as plt
 3. Check for missing values and replace them with 0.
 4. Convert all gauge columns (Broad, Metre, Narrow, Total) to numeric types."""
 
-
 #load the csv file
 df = pd.read_csv("railway_gauges.csv")
-#read first five rows
+#read first 5 rows
 print(df.head())
-#read olnly columns names
-print(df.columns)
+#read only columns names
+print("\n Column names: \n",df.columns)
 
 #check missing values nan and replace with 0
 print(df.isnull().sum())
@@ -84,10 +83,11 @@ print(df_filter)
 #Grouped bar chart
 x = np.arange(len(df_filter)) 
 w = 0.25
+plt.figure(figsize=(12,8))
 plt.bar(x, df_filter["Broad Gauge"], w, label="Broad") #x positions on the x-axis , w width of each bar
 plt.bar(x + w, df_filter["Metre Gauge"], w, label="Metre")  #x + w shifts bars slightly to the right
 plt.bar(x + 2*w, df_filter["Narrow Gauge"], w, label="Narrow")  #x + 2*w shifts even more to the right
-plt.xticks(x, df_filter["Year"], rotation=45)
+plt.xticks(x, df_filter["Year"], rotation=70)
 plt.xlabel("Year")
 plt.ylabel("Tracks")
 plt.title("Gauge Comparison After 2000")
@@ -118,9 +118,9 @@ print(total_sum)
 dataframe = total_sum.to_frame(name="Total")
 print(dataframe)
 
-
 #Plot Pie Chart
 plt.pie(total_sum, labels=total_sum.index, autopct='%1.1f%%',explode=(0.1,0,0),startangle=180)
+plt.savefig("Percentage Contribution")
 plt.title("Percentage Contribution")
 plt.show()
 
@@ -159,27 +159,32 @@ yearly_growth = np.diff(df["Total"]) #np.diff() calculates the difference betwee
 print("Yearly Growth:", yearly_growth) #Difference = Current Year - Previous Year
 
 #Plot line graph
-plt.plot(df["Year"], df["Broad Gauge"], label="Broad Gauge")
-plt.plot(df["Year"], df["Metre Gauge"], label="Metre Gauge")
-plt.plot(df["Year"], df["Narrow Gauge"], label="Narrow Gauge")
+plt.figure(figsize=(12,8))
+plt.plot(df["Year"], df["Broad Gauge"], label="Broad Gauge" ,marker='o')
+plt.plot(df["Year"], df["Metre Gauge"], label="Metre Gauge" ,marker='o')
+plt.plot(df["Year"], df["Narrow Gauge"], label="Narrow Gauge" ,marker='o')
 plt.xticks(rotation=70)
 plt.legend()
 plt.title("Line Graph for all Gauges")
+plt.savefig("Line Graph for all Gauges")
 plt.xlabel("Year")
 plt.ylabel("Tracks")
 plt.show()
 
 #Stacked bar chart 
+x = np.arange(len(df_filter)) 
+w = 0.25
+plt.figure(figsize=(12,8))
 plt.bar(df["Year"], df["Broad Gauge"], label="Broad Gauge")
 plt.bar(df["Year"], df["Metre Gauge"], label="Metre Gauge")
 plt.bar(df["Year"], df["Narrow Gauge"], label="Narrow Gauge")
 plt.xticks(rotation=70)
 plt.legend()
+plt.savefig("Gauge Composition")
 plt.title("Gauge Composition")
 plt.xlabel("Year")
 plt.ylabel("Tracks")
 plt.show()
-
 
 # Highlights
 # Highest growth year
