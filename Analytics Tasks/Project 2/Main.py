@@ -294,5 +294,5 @@ print("\n high Scores", yearly_score_growth)
 # Ans: Excellent scores remain relatively rare compared to "Good"
 
 # If editors_choice correlates with high scores
-# "Excellent" has the highest probability of being editor’s choice"
+# Ans: Excellent" has the highest probability of being editor’s choice
 print(df.groupby("score_category")["editors_choice"].mean())
