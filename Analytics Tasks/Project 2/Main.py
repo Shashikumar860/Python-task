@@ -148,7 +148,6 @@ plt.xlabel("Platform")
 plt.ylabel("Count of Games")
 plt.title("Top Platforms")
 plt.savefig("Top Platforms Bar")
-plt.legend()
 plt.show()
 
 # ============================================================
@@ -247,7 +246,6 @@ plt.xlabel("Release Year")
 plt.ylabel("Average Score")
 plt.title("Average Score Trend Over Years")
 plt.savefig("Score Trend")
-plt.legend()
 plt.show()  
 
 # Stacked Bar Chart
@@ -296,3 +294,4 @@ print("\n high Scores", yearly_score_growth)
 # If editors_choice correlates with high scores
 # Ans: Excellent" has the highest probability of being editor’s choice
 print(df.groupby("score_category")["editors_choice"].mean())
+
