@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Seats - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Back to Movie Details link -->
+    <a href="/movie/{{ showtime[1] }}" class="back-home-link" id="seats-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Movie Details</a>
+
+    <div class="booking-grid">
+        <!-- Left Column: Visual Seat Map -->
+        <div class="seat-map-card">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: #fff;">Select Your Seats</h2>
+            
+            <!-- Screen curve indicator -->
+            <div class="screen-container">
+                <div class="screen-curve"></div>
+                <div class="screen-right-wall"></div>
+                <div class="screen-label">IMAX Dolby Laser Screen</div>
+            </div>
+
+            <!-- Seat Row Grid -->
+            <div class="seat-rows">
+                {% set layout = showtime['seating_layout']|default('standard') %}
+                {% if layout == 'standard' %}
+                    {% set rows = ['A', 'B', 'C', 'D', 'E', 'F'] %}
+                    {% set cols = [1, 2, 3, 4, 5, 6, 7, 8] %}
+                    {% set vip_rows = ['D', 'E'] %}
+                    {% set recliner_row = 'F' %}
+                    {% set total_seats_count = 48 %}
+                {% else %}
+                    {% set rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] %}
+                    {% set cols = [1, 2, 3, 4, 5, 6, 7, 8] %}
+                    {% set vip_rows = ['F', 'G'] %}
+                    {% set recliner_row = 'H' %}
+                    {% set total_seats_count = 64 %}
+                {% endif %}
+                
+                {% for r in rows %}
+                    {% set is_vip = r in vip_rows %}
+                    {% set is_recliner = r == recliner_row %}
+                    {% if is_recliner %}
+                        {% set row_price = (showtime[6] + showtime[11])|int %}
+                        {% set seat_class = 'recliner' %}
+                    {% elif is_vip %}
+                        {% set row_price = (showtime[6] + showtime[10])|int %}
+                        {% set seat_class = 'vip' %}
+                    {% else %}
+                        {% set row_price = showtime[6]|int %}
+                        {% set seat_class = 'standard' %}
+                    {% endif %}
+                    
+                    {% if r == 'A' %}
+                        <div class="tier-divider" style="margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; width: 100%; display: flex; justify-content: flex-start; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-display);">
+                            <span>Silver Seats - ₹{{ showtime[6]|int }}</span>
+                        </div>
+                    {% elif (layout == 'standard' and r == 'D') or (layout != 'standard' and r == 'F') %}
+                        {% set divider_margin = '4.5rem' if layout == 'horizontal_aisle' else '2rem' %}
+                        <div class="tier-divider" style="margin-top: {{ divider_margin }}; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; width: 100%; display: flex; justify-content: flex-start; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-display);">
+                            <span>Gold Seats - ₹{{ (showtime[6] + showtime[10])|int }}</span>
+                        </div>
+                    {% elif (layout == 'standard' and r == 'F') or (layout != 'standard' and r == 'H') %}
+                        <div class="tier-divider" style="margin-top: 2rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; width: 100%; display: flex; justify-content: flex-start; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-display);">
+                            <span>Recliner Seats - ₹{{ (showtime[6] + showtime[11])|int }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="seat-row" id="row-{{ r }}">
+                        <div class="row-label">{{ r }}</div>
+                        <div class="seats-in-row">
+                            {% for c in cols %}
+                                {% set seat_id = r ~ c %}
+                                {% set is_occupied = seat_id in occupied_seats %}
+                                <div class="seat {{ seat_class }} {% if is_occupied %}occupied{% endif %}" 
+                                     data-seat-id="{{ seat_id }}" 
+                                     data-price="{{ row_price }}"
+                                     id="seat-{{ seat_id }}">
+                                    {{ c }}
+                                </div>
+                                {% if (layout == 'center_aisle' or (layout == 'hybrid_aisle' and not is_recliner)) and c == 4 %}
+                                    <div class="seat-spacer" style="width: 24px;"></div>
+                                {% elif layout == 'double_aisle' and (c == 2 or c == 6) %}
+                                    <div class="seat-spacer" style="width: 24px;"></div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="row-label">{{ r }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Seat Legend -->
+            <div class="legend-container" style="margin-top: 2.5rem; margin-bottom: 1.5rem;">
+                <div class="legend-item">
+                    <div class="seat-demo standard"></div>
+                    <span>Silver (₹{{ showtime[6]|int }})</span>
+                </div>
+                <div class="legend-item">
+                    <div class="seat-demo vip"></div>
+                    <span>Gold (₹{{ (showtime[6] + showtime[10])|int }})</span>
+                </div>
+                <div class="legend-item">
+                    <div class="seat-demo recliner"></div>
+                    <span>Recliner (₹{{ (showtime[6] + showtime[11])|int }})</span>
+                </div>
+                <div class="legend-item">
+                    <div class="seat-demo selected"></div>
+                    <span>Selected</span>
+                </div>
+                <div class="legend-item">
+                    <div class="seat-demo occupied"></div>
+                    <span>Occupied</span>
+                </div>
+            </div>
+            
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem;">
+                <i class="fa-solid fa-circle-info"></i> 
+                {% if layout == 'standard' %}
+                    Row F consists of premium recliners (+₹{{ showtime[11]|int }} surcharge). Rows D and E are Gold seats (+₹{{ showtime[10]|int }} surcharge).
+                {% else %}
+                    Row H consists of premium recliners (+₹{{ showtime[11]|int }} surcharge). Rows F and G are Gold seats (+₹{{ showtime[10]|int }} surcharge).
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Right Column: Booking Form and Summary -->
+        <div class="booking-info-card">
+            <div class="info-header">
+                <h3 class="info-title">{{ showtime[7] }}</h3>
+                <div class="info-meta">
+                    <p><i class="fa-solid fa-location-dot"></i> {{ showtime[8] }}{% if showtime|length > 14 and showtime[14] %}, {{ showtime[14] }}{% endif %}</p>
+                    <p><i class="fa-solid fa-film"></i> {{ showtime[9] }}</p>
+                    <p><i class="fa-regular fa-calendar-days"></i> {{ showtime[4] }} at <span style="color: var(--accent-gold); font-weight: 600;">{{ showtime[3]|time_12hr }}</span></p>
+                    <p><i class="fa-solid fa-chair"></i> Seats Available: <span style="color: var(--accent-cyan); font-weight: 600;">{{ remaining_seats }} / {{ total_seats_count }}</span></p>
+                </div>
+            </div>
+
+            <!-- Live Summary Panel -->
+            <div class="booking-summary">
+                <div class="summary-row">
+                    <span>Selected Seats:</span>
+                    <span id="selected-seats-display" style="font-weight: 600; color: var(--accent-cyan);">None</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tickets:</span>
+                    <span id="ticket-count-display">0 Tickets</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total Cost:</span>
+                    <span id="total-price-display">₹0</span>
+                </div>
+            </div>
+
+            <!-- Checkout Form -->
+            <form action="/checkout" method="POST" id="checkout-form">
+                <!-- Hidden fields -->
+                <input type="hidden" name="showtime_id" value="{{ showtime[0] }}">
+                <input type="hidden" name="selected_seats" id="selected-seats-input">
+
+                <div class="form-group">
+                    <label for="customer_name" class="form-label">Customer Name</label>
+                    <input type="text" id="customer_name" name="customer_name" class="form-input" 
+                           placeholder="Enter Customer Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customer_email" class="form-label">Email Address</label>
+                    <input type="email" id="customer_email" name="customer_email" class="form-input" 
+                            placeholder="Enter Email Address" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customer_phone" class="form-label">Mobile Number</label>
+                    <input type="tel" id="customer_phone" name="customer_phone" class="form-input" 
+                             placeholder="Enter 10-digit Mobile Number" pattern="[0-9]{10}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="payment_type" class="form-label">Payment Method</label>
+                    <select id="payment_type" name="payment_type" class="form-input" required>
+                        <option value="">Select Payment Method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Online Payment">Online Payment</option>
+                        <option value="Card">Credit/Debit Card</option>
+                        <option value="UPI">UPI</option>
+                        <option value="PhonePe">PhonePe</option>
+                        <option value="Paytm">Paytm</option>
+                        
+                    </select>
+                </div>
+
+                <button type="submit" class="nav-btn btn-gold btn-block" id="checkout-submit-btn" disabled>
+                    <i class="fa-solid fa-credit-card"></i> Purchase Tickets
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

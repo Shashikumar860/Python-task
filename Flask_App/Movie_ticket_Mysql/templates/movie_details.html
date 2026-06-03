@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie[1] }} - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<!-- Full-width Immersive BookMyShow Banner -->
+<div class="bms-details-banner" style="position: relative; background: linear-gradient(90deg, #151821 20%, rgba(21, 24, 33, 0.92) 50%, rgba(21, 24, 33, 0.8) 100%), url('{{ movie[6] }}'); background-size: cover; background-position: center; padding: 3rem 0; border-bottom: 1px solid var(--border-color); overflow: hidden;">
+    <!-- Backdrop Blur Effect -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); z-index: 1;"></div>
+    
+    <!-- Banner Content Wrapper -->
+    <div class="container" style="position: relative; z-index: 2; margin: 0 auto; display: grid; grid-template-columns: 260px 1fr; gap: 3rem; align-items: center;">
+        <!-- Left: Floating Poster -->
+        <div class="details-poster" style="aspect-ratio: 2/3; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); width: 100%; background: var(--bg-secondary);">
+            {% if movie[6] %}
+                <img src="{{ movie[6] }}" alt="{{ movie[1] }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            {% endif %}
+            <div class="fallback-poster" style="height: 100%; {% if movie[6] %}display: none;{% else %}display: flex;{% endif %}">
+                <i class="fa-solid fa-film fallback-icon" style="font-size: 5rem;"></i>
+                <span style="font-weight: 700; font-size: 1.2rem; color: var(--text-muted); margin-top: 1rem;">{{ movie[1] }}</span>
+            </div>
+        </div>
+
+        <!-- Right: Meta details -->
+        <div class="details-content" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% if session.get('is_admin') %}
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 0.25rem;">
+                    <a href="/admin/showtime/add?movie_id={{ movie[0] }}" class="nav-btn btn-gold" style="font-size: 0.85rem; padding: 0.4rem 1.25rem;" id="admin-add-showtime-details-btn"><i class="fa-solid fa-calendar-plus"></i> Add Showtime</a>
+                    <a href="/admin/movie/edit/{{ movie[0] }}" class="nav-btn btn-outline" style="font-size: 0.85rem; padding: 0.4rem 1.25rem;" id="admin-edit-details-btn"><i class="fa-solid fa-pen"></i> Edit Movie</a>
+                    <form action="/admin/movie/delete/{{ movie[0] }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ movie[1] }}? This will delete all its showtimes and bookings.');" style="margin: 0;">
+                        <button type="submit" class="nav-btn" style="background: rgba(248, 68, 100, 0.15); border: 1px solid rgba(248, 68, 100, 0.3); color: #fca5a5; font-size: 0.85rem; padding: 0.4rem 1.25rem; cursor: pointer;" id="admin-delete-details-btn">
+                            <i class="fa-solid fa-trash"></i> Delete Movie
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+            
+            <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin: 0; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">{{ movie[1] }}</h1>
+            
+            <!-- Ratings block -->
+            <div style="display: flex; align-items: center; gap: 1rem; background: rgba(0, 0, 0, 0.4); padding: 0.75rem 1.25rem; border-radius: 8px; width: fit-content; border: 1px solid rgba(255, 255, 255, 0.05);">
+                <i class="fa-solid fa-star" style="color: var(--accent-gold); font-size: 1.4rem; text-shadow: var(--shadow-gold);"></i>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: 700; font-size: 1.1rem; color: #fff;">{{ movie[5] }}/10</span>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Critic & Audience Rating</span>
+                </div>
+                <div style="display: flex; gap: 0.15rem; margin-left: 0.5rem;">
+                    {% set stars_count = (movie[5] | float / 2) %}
+                    {% for i in range(1, 6) %}
+                        {% if stars_count >= i %}
+                            <i class="fa-solid fa-star" style="color: var(--accent-gold); font-size: 0.8rem;"></i>
+                        {% elif stars_count >= (i - 0.5) %}
+                            <i class="fa-solid fa-star-half-stroke" style="color: var(--accent-gold); font-size: 0.8rem;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: var(--text-muted); opacity: 0.5; font-size: 0.8rem;"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Badges formatting languages/format -->
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="meta-pill" style="background: #fff; color: #121520; border: none; font-weight: 700; font-size: 0.8rem; border-radius: 4px; padding: 0.2rem 0.6rem;">{{ movie['formats'] if (movie is mapping and 'formats' in movie and movie['formats']) else (movie[10] if (movie|length > 10 and movie[10]) else '2D') }}</span>
+                <span class="meta-pill" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.1); font-weight: 600; font-size: 0.8rem; border-radius: 4px; padding: 0.2rem 0.6rem;">{{ movie[7] }}</span>
+            </div>
+
+            <!-- Duration & Genre -->
+            <div style="font-size: 0.95rem; color: #e2e8f0; display: flex; gap: 1rem; align-items: center; margin-top: 0.15rem;">
+                <span><i class="fa-regular fa-clock" style="color: var(--accent-gold);"></i> {{ movie[4] // 60 }}h {{ movie[4] % 60 }}m</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-tags" style="color: var(--accent-gold);"></i> {{ movie[3] }}</span>
+                <span>•</span>
+                <span>U/A</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Body: details & showtimes -->
+<div class="container" style="margin-top: 3rem;">
+    <!-- Synopsis -->
+    <div style="margin-bottom: 3.5rem;">
+        <h2 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-circle-info" style="color: var(--accent-gold);"></i> About the Movie</h2>
+        <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.6; max-width: 900px; margin: 0;">{{ movie[2] }}</p>
+    </div>
+
+    <!-- Showtimes or Coming Soon Info Card -->
+    {% if movie[8] == 'Upcoming' or movie['release_status'] == 'Upcoming' %}
+        <div style="padding: 3rem 2rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; text-align: center; margin-bottom: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <i class="fa-regular fa-calendar-days" style="font-size: 3.5rem; color: var(--accent-cyan); margin-bottom: 1.25rem; text-shadow: var(--shadow-cyan); display: inline-block;"></i>
+            <h3 style="font-size: 1.85rem; margin-bottom: 0.75rem; color: #fff; font-family: var(--font-display);">Coming Soon!</h3>
+            <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 2rem auto; font-size: 1.05rem; line-height: 1.6;">
+                This movie is not released yet. Showtimes and ticket bookings will open on <strong style="color: var(--accent-cyan);">{{ movie[9] }}</strong>. Stay tuned!
+            </p>
+            <a href="/movies" class="nav-btn btn-outline" style="padding: 0.75rem 2rem; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i> Back to Browse Movies</a>
+        </div>
+    {% else %}
+        <!-- Showtimes Section -->
+        <div class="showtimes-section">
+            <h2 style="font-size: 1.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;"><i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> Available Showtimes</h2>
+            
+            {% if showtimes_grouped %}
+                {% for theatre_name, t_data in showtimes_grouped.items() %}
+                    <div class="theatre-group" id="theatre-group-{{ loop.index }}" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                        <h3 class="theatre-name" style="font-size: 1.25rem; margin-bottom: 0.25rem; color: var(--accent-cyan);">{{ theatre_name }}</h3>
+                        <p class="theatre-location" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;"><i class="fa-solid fa-location-dot"></i> {{ t_data.location }}</p>
+                        
+                        <div class="date-slots" style="display: flex; flex-direction: column; gap: 1rem;">
+                            {% for date, slots in t_data.dates.items() %}
+                                <div class="date-row" style="display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.03); padding-bottom: 0.75rem;">
+                                    <div class="date-label" style="font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">{{ date }}</div>
+                                    <div class="time-slots" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                        {% for slot in slots %}
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.35rem;">
+                                                {% if slot.remaining_seats == 0 %}
+                                                    <span class="time-btn" style="opacity: 0.5; cursor: not-allowed; border-color: var(--color-cancelled); text-align: center; position: relative; overflow: hidden; padding-bottom: 0.8rem;" title="This showtime is sold out">
+                                                        <span class="time-val" style="color: var(--color-cancelled);">{{ slot.time|time_12hr }} <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 500;">({{ slot.format }})</span></span>
+                                                        <span class="price-val" style="color: var(--color-cancelled); font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem;">SOLD OUT</span>
+                                                        <div class="showtime-bar" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--color-cancelled);"></div>
+                                                    </span>
+                                                {% else %}
+                                                     <a href="/book/{{ slot.id }}" class="time-btn {% if slot.remaining_seats <= 12 %}filling-fast{% else %}available{% endif %}" id="showtime-btn-{{ slot.id }}" title="Theatre: {{ slot.hall }}" style="position: relative; overflow: hidden; padding-bottom: 0.8rem;">
+                                                         <span class="time-val">{{ slot.time|time_12hr }} <span style="font-size: 0.7rem; opacity: 0.8; font-weight: 500;">({{ slot.format }})</span></span>
+                                                         <span class="price-val">₹{{ slot.price|int }}</span>
+                                                         <span class="price-val" style="color: var(--text-secondary); font-size: 0.65rem; margin-top: 0.15rem;">{{ slot.remaining_seats }} left</span>
+                                                        
+                                                        <!-- Micro seat availability progress bar -->
+                                                        <div class="showtime-bar" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.08);">
+                                                            {% set filled_pct = ((64 - slot.remaining_seats) / 64 * 100)|int %}
+                                                            <div style="width: {{ filled_pct }}%; height: 100%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-gold));"></div>
+                                                        </div>
+                                                     </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="padding: 2rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; text-align: center; color: var(--text-secondary);">
+                    <i class="fa-solid fa-circle-info" style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 0.5rem;"></i>
+                    <p>No showtimes currently scheduled for this movie. Check back soon!</p>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

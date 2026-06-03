@@ -1,0 +1,2 @@
+High Scorers (>50): {'Praween': 85, 'Naveen': 78, 'Bharath': 90}
+Average Mark: 65.60

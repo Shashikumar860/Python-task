@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie Ticket Booking{% endblock %}</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Radial glow background blobs -->
+    <div class="glow-bg">
+        <div class="glow-blob blob-1"></div>
+        <div class="glow-blob blob-2"></div>
+        <div class="glow-blob blob-3"></div>
+        <div class="glow-blob blob-4"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar" id="app-navbar">
+        <a href="/" class="nav-brand" id="nav-home-logo" style="display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-sans); text-decoration: none;">
+            <!-- Glowing Red/Pink Ticket Icon -->
+            <div style="width: 40px; height: 40px; border-radius: 9px; background: #ff3b5c; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(255, 59, 92, 0.65); color: #fff; flex-shrink: 0;">
+                <i class="fa-solid fa-ticket" style="font-size: 1.25rem;"></i>
+            </div>
+            <!-- Stacked Text -->
+            <div style="display: flex; flex-direction: column; line-height: 1.05; font-size: 1.35rem; letter-spacing: -0.01em;">
+                <span style="color: #ffffff; font-weight: 700;">Movie Ticket</span>
+                <span style="color: #ff3b5c; font-weight: 800; text-shadow: 0 0 10px rgba(255, 59, 92, 0.35);">Booking</span>
+            </div>
+        </a>
+        <ul class="nav-menu">
+            <li>
+                <a href="/movies" class="nav-btn btn-outline {% if request.path == '/movies' %}active{% endif %}" id="nav-movies-link">
+                    <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                    Browse Movies
+                </a>
+            </li>
+            {% if session.get('user_id') %}
+                <li>
+                    <a href="/live-status" class="nav-btn btn-outline {% if request.path == '/live-status' %}active{% endif %}" id="nav-live-status-link">
+                        <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        Live Seat Status
+                    </a>
+                </li>
+                <li>
+                    <a href="/my-bookings" class="nav-btn btn-outline {% if request.path == '/my-bookings' %}active{% endif %}" id="nav-bookings-link">
+                        <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v14"></path><path d="M9 9v.01"></path><path d="M9 15v.01"></path></svg>
+                        My Tickets
+                    </a>
+                </li>
+                {% if session.get('is_admin') %}
+                    <li>
+                        <a href="/admin" class="nav-btn btn-outline {% if request.path == '/admin' %}active{% endif %}" id="nav-admin-link">
+                            <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 17V9"></path><path d="M15 17v-4"></path><path d="M21 12H3"></path></svg>
+                            Admin Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/movie/add" class="nav-btn btn-outline {% if request.path == '/admin/movie/add' %}active{% endif %}" id="nav-add-movie-link">
+                            <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                            Add Movie
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/theatre/add" class="nav-btn btn-outline {% if request.path == '/admin/theatre/add' %}active{% endif %}" id="nav-add-theatre-link">
+                            <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 10V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path></svg>
+                            Add Theatre
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/showtime/add" class="nav-btn btn-outline {% if request.path == '/admin/showtime/add' %}active{% endif %}" id="nav-add-showtime-link">
+                            <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M12 14v4M10 16h4"></path></svg>
+                            Add Showtime
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="nav-profile-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center; height: 38px; margin-right: 0.25rem;">
+                    <div class="avatar-circle-small" id="nav-avatar-btn" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan) 0%, #0077b6 100%); color: var(--bg-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem; font-family: var(--font-display); box-shadow: var(--shadow-cyan); text-transform: uppercase; border: 2px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: all 0.3s ease;">
+                        {{ session.get('username', 'U')[0] }}
+                    </div>
+                    
+                    <!-- Glassmorphic Profile Dropdown Menu -->
+                    <div class="profile-dropdown-card" id="profile-dropdown" style="padding-bottom: 1rem;">
+                        <div class="dropdown-header">
+                            <div class="avatar-circle-small" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan) 0%, #0077b6 100%); color: var(--bg-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; text-transform: uppercase; border: 2px solid rgba(255, 255, 255, 0.15); flex-shrink: 0;">
+                                {{ session.get('username', 'U')[0] }}
+                            </div>
+                            <div class="dropdown-user-info">
+                                <span class="dropdown-username">{{ session.get('username') }}</span>
+                                {% if session.get('is_admin') %}
+                                    <span class="dropdown-role-badge admin">Admin</span>
+                                {% else %}
+                                    <span class="dropdown-role-badge">Customer</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="dropdown-body">
+                            <div class="dropdown-detail-item" title="{{ session.get('email') }}">
+                                <i class="fa-solid fa-envelope"></i>
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ session.get('email', 'N/A') }}</span>
+                            </div>
+                            <div class="dropdown-detail-item">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>ID: #{{ session.get('user_id', 'N/A') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="/logout" class="nav-btn btn-gold" id="nav-logout-btn">
+                        <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>
+                        Log Out
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="/login" class="nav-btn btn-outline {% if request.path == '/login' %}active{% endif %}" id="nav-login-link">
+                        <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"></path></svg>
+                        Log In
+                    </a>
+                </li>
+                <li>
+                    <a href="/register" class="nav-btn btn-gold" id="nav-register-btn">
+                        <svg class="nav-btn-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8.5 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6M23 11h-6"></path></svg>
+                        Sign Up
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Flash messaging containers -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <span>{{ message }}</span>
+                        <button class="flash-close"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Block -->
+    <main style="flex-grow: 1;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Movie Ticket Booking. All rights reserved. Designed & Created with premium Flask & CSS.</p>
+    </footer>
+
+    <!-- Main scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

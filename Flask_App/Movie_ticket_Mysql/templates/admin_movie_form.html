@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title_text }} - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="/admin" class="back-home-link" style="margin-bottom: 2rem;" id="form-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="form-card">
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            {{ title_text }}
+        </h2>
+
+        <form action="{{ action }}" method="POST" id="movie-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title" class="form-label">Movie Title</label>
+                <input type="text" id="title" name="title" class="form-input" 
+                       value="{{ movie[1] if movie else '' }}" placeholder="e.g. Dune: Part Two" required>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="genre" class="form-label">Genre</label>
+                    <select id="genre" name="genre" class="form-input" required>
+                        <option value="">Select Genre</option>
+                        <option value="Biography" {% if movie and movie[3] == 'Biography' %}selected{% endif %}>Biography</option>
+                        <option value="Animation" {% if movie and movie[3] == 'Animation' %}selected{% endif %}>Animation</option>
+                        <option value="Action" {% if movie and movie[3] == 'Action' %}selected{% endif %}>Action</option>
+                        <option value="Drama" {% if movie and movie[3] == 'Drama' %}selected{% endif %}>Drama</option>
+                        <option value="Comedy" {% if movie and movie[3] == 'Comedy' %}selected{% endif %}>Comedy</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="rating" class="form-label">Rating (e.g. 8.5)</label>
+                    <input type="number" id="rating" name="rating" class="form-input" 
+                           value="{{ movie[5] if movie else '' }}" placeholder="e.g. 8.5" step="0.1" min="0" max="10" required>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="duration" class="form-label">Duration (Minutes)</label>
+                    <input type="number" id="duration" name="duration" class="form-input" 
+                           value="{{ movie[4] if movie else '' }}" placeholder="e.g. 145" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="poster_path" class="form-label">Poster Image URL / Path</label>
+                    <input type="text" id="poster_path" name="poster_path" class="form-input" 
+                           value="{{ movie[6] if movie else '' }}" placeholder="e.g. /static/images/my_poster.png or https://example.com/poster.jpg">
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Paste an image URL/path, or upload a file below.</small>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="poster_file" class="form-label">Or Upload Poster Image File</label>
+                <input type="file" id="poster_file" name="poster_file" class="form-input" accept="image/*" style="padding: 0.5rem 0.75rem;">
+                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Select a local image file from your system to upload.</small>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="language" class="form-label">Language</label>
+                    <input type="text" id="language" name="language" class="form-input" 
+                           value="{{ movie[7] if movie else '' }}" placeholder="e.g. English, Hindi, Spanish" required>
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Enter the language(s) of the movie.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="release_status" class="form-label">Release Status</label>
+                    <select id="release_status" name="release_status" class="form-input" required>
+                        <option value="">Select Status</option>
+                        <option value="Released" {% if movie and (movie[8] == 'Released' or movie['release_status'] == 'Released') %}selected{% endif %}>Released (Now Showing)</option>
+                        <option value="Upcoming" {% if movie and (movie[8] == 'Upcoming' or movie['release_status'] == 'Upcoming') %}selected{% endif %}>Upcoming (Coming Soon)</option>
+                        <option value="Re-Release" {% if movie and (movie[8] == 'Re-Release' or movie['release_status'] == 'Re-Release') %}selected{% endif %}>Re-Release</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Available Formats</label>
+                <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+                    {% set current_formats = movie['formats'] if movie and 'formats' in movie else (movie[10] if movie and movie|length > 10 else ('2D, 3D, IMAX' if not movie else '2D')) %}
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
+                        <input type="checkbox" name="formats" value="2D" {% if '2D' in current_formats %}checked{% endif %} style="cursor: pointer; width: 1.1rem; height: 1.1rem; accent-color: var(--accent-gold);">
+                        2D
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
+                        <input type="checkbox" name="formats" value="3D" {% if '3D' in current_formats %}checked{% endif %} style="cursor: pointer; width: 1.1rem; height: 1.1rem; accent-color: var(--accent-gold);">
+                        3D
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-primary);">
+                        <input type="checkbox" name="formats" value="IMAX" {% if 'IMAX' in current_formats %}checked{% endif %} style="cursor: pointer; width: 1.1rem; height: 1.1rem; accent-color: var(--accent-gold);">
+                        IMAX
+                    </label>
+                </div>
+                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Select the formats in which this movie is available.</small>
+            </div>
+
+            <div class="form-group" id="release_date_group" style="display: none;">
+                <label for="release_date" class="form-label">Release Date (e.g. Dec 18, 2026)</label>
+                <input type="text" id="release_date" name="release_date" class="form-input" 
+                       value="{{ movie[9] if movie and movie[9] else (movie['release_date'] if movie and 'release_date' in movie else '') }}" placeholder="e.g. Dec 18, 2026">
+                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Enter the projected release date for upcoming movies.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="form-label">Synopsis/Description</label>
+                <textarea id="description" name="description" class="form-input" rows="4" 
+                          placeholder="Provide a detailed movie synopsis..." required>{{ movie[2] if movie else '' }}</textarea>
+            </div>
+
+            <script>
+            function toggleReleaseDate() {
+                const status = document.getElementById('release_status').value;
+                const dateGroup = document.getElementById('release_date_group');
+                const dateInput = document.getElementById('release_date');
+                if (status === 'Upcoming') {
+                    dateGroup.style.display = 'block';
+                    dateInput.required = true;
+                } else {
+                    dateGroup.style.display = 'none';
+                    dateInput.required = false;
+                }
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const statusSelect = document.getElementById('release_status');
+                if (statusSelect) {
+                    statusSelect.addEventListener('change', toggleReleaseDate);
+                    toggleReleaseDate(); // Initialize visibility on page load
+                }
+            });
+            </script>
+
+            
+
+            <button type="submit" class="nav-btn btn-gold btn-block" style="padding: 0.8rem;" id="form-submit-btn">
+                <i class="fa-solid fa-floppy-disk"></i> Save Movie
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

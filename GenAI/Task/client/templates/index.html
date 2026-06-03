@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Secure read-only database query assistant for the movie ticketing system. Get real-time updates on showtimes, seats, and reviews.">
+    <title>MovieQuery AI - Movie Ticket Chatbot</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet with Cache Busting -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='2') }}">
+</head>
+<body>
+    <!-- Animated cinematic background image & overlay -->
+    <div class="bg-image-container"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- Animated background glowing blobs -->
+    <div class="bg-glow-container">
+        <div class="glow-blob blob-1"></div>
+        <div class="glow-blob blob-2"></div>
+        <div class="glow-blob blob-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar with info and suggested queries -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-clapperboard logo-icon"></i>
+                    <h2>MovieQuery<span>AI</span></h2>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-shield-halved section-icon"></i> Read-Only Assistant</h3>
+                <p class="sidebar-text">
+                    I have direct, read-only access to the movie ticketing database. I can answer questions about showtimes, availability, and details, but cannot perform booking transactions or updates.
+                </p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-lightbulb section-icon"></i> Things you can ask</h3>
+                <ul class="suggestion-list">
+                    <li><button class="suggest-btn" data-query="What movies are currently showing?">What movies are showing?</button></li>
+                    <li><button class="suggest-btn" data-query="List all theaters and their locations">List all theaters</button></li>
+                    <li><button class="suggest-btn" data-query="Are there any seats available for movies today?">Seat availability today</button></li>
+                    <li><button class="suggest-btn" data-query="What is the average rating of movies in the database?">Average movie ratings</button></li>
+                    <li><button class="suggest-btn" data-query="Show me the contact submissions about issues">View support tickets</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Connected to MySQL DB</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <header class="chat-header">
+                <div class="chat-title-area">
+                    <h1 id="main-heading">Database Chatbot Assistant</h1>
+                    <p>Ask anything about movies, showtimes, seats, and theaters</p>
+                </div>
+                <div class="header-actions">
+                    <button id="clear-btn" class="header-action-btn" title="Clear Conversation">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Window for Bubbles -->
+            <section class="chat-messages" id="chat-messages-box">
+                <!-- Welcome Message -->
+                <div class="message system">
+                    <div class="message-avatar">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hello! I am <strong>MovieQuery AI</strong>, your intelligent assistant for the <strong>movie_ticket_mysql</strong> database.</p>
+                        <p>I can help you search movies, check seat counts, verify showtimes, and check support submissions in real-time. For security reasons, I am restricted to read-only queries and cannot book tickets, create new accounts, or update database entries.</p>
+                        <p>How can I help you today?</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div class="typing-indicator-container" id="typing-indicator">
+                <div class="typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <span class="typing-text">Translating question to SQL query...</span>
+            </div>
+
+            <!-- Input area -->
+            <footer class="chat-input-area">
+                <div class="pill-suggestions">
+                    <button class="pill-btn" data-query="What upcoming movies are showing?">Upcoming Movies</button>
+                    <button class="pill-btn" data-query="Show me the showtimes for tomorrow">Tomorrow's Showtimes</button>
+                    <button class="pill-btn" data-query="Find Re-release movies">Re-release Movies</button>
+                </div>
+                
+                <form id="chat-form" class="chat-form-container">
+                    <input type="text" id="chat-input" placeholder="Ask a question about the movie ticketing database..." autocomplete="off" required>
+                    <button type="submit" id="send-button" class="send-btn" title="Send message">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Main JavaScript File -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

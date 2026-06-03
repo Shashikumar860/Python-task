@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-dashboard-container">
+        <!-- Left Sidebar: Animated Cinema Illustration -->
+        <div class="auth-image-side">
+            <div class="auth-image-overlay"></div>
+            <img src="/static/images/login_cinema_art.png" alt="Cinema Illustration" class="auth-promo-img">
+            <div class="auth-image-content">
+                <h3 class="auth-promo-title">Movie Ticket Booking Premium</h3>
+                <p class="auth-promo-text">Step into a world of luxury cinema entertainment</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Credentials Form -->
+        <div class="auth-form-side">
+            <div class="auth-header" style="text-align: left; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem;">Welcome Back</h2>
+                <p style="font-size: 0.9rem;">Sign in to book your movie tickets</p>
+            </div>
+
+            <form action="" method="POST" id="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="Enter username or email" required autocomplete="username">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="nav-btn btn-gold btn-block" id="login-submit-btn" style="margin-top: 1rem;">Log In</button>
+            </form>
+
+            <div class="auth-footer" style="text-align: left; margin-top: 1.5rem;">
+                Don't have an account? <a href="/register" id="login-to-register-link">Register here</a>
+                <br>
+                <a href="/" class="back-home-link" id="login-back-home" style="margin-top: 1rem;"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

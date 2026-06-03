@@ -1,0 +1,151 @@
+/* Beautiful modern styling for Gemini AI Chatbot */
+
+:root {
+    --bg-gradient-1: #0f172a;
+    --bg-gradient-2: #1e293b;
+    --surface: rgba(15, 23, 42, 0.88);
+    --surface-strong: rgba(15, 23, 42, 0.98);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --accent: #38bdf8;
+    --accent-strong: #0ea5e9;
+    --border: rgba(148, 163, 184, 0.18);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 18%),
+                radial-gradient(circle at 90% 10%, rgba(236, 72, 153, 0.18), transparent 16%),
+                linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 15% 25%, rgba(96, 165, 250, 0.22), transparent 18%),
+        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.18), transparent 16%),
+        radial-gradient(circle at 60% 85%, rgba(56, 189, 248, 0.16), transparent 12%);
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+body > * {
+    width: min(760px, calc(100% - 48px));
+    position: relative;
+    z-index: 1;
+}
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+#question,
+button {
+    max-width: 520px;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(2rem, 3.2vw, 3rem);
+    letter-spacing: -0.04em;
+    color: white;
+    text-align: center;
+}
+
+#question,
+button {
+    width: 100%;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+}
+
+#question {
+    background: rgba(15, 23, 42, 0.92);
+    color: var(--text-primary);
+    padding: 14px 18px;
+    font-size: 0.98rem;
+    outline: none;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+#question:focus {
+    border-color: #60a5fa;
+    background: rgba(15, 23, 42, 1);
+    transform: translateY(-1px);
+}
+
+button {
+    margin-top: 18px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 35%, #ec4899 100%);
+    color: white;
+    font-size: 0.98rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.24);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover,
+button:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 40px rgba(56, 189, 248, 0.22);
+}
+
+button:active {
+    opacity: 0.95;
+}
+
+#response {
+    margin-top: 28px;
+    padding: 24px;
+    border-radius: 24px;
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.16);
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    min-height: 120px;
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 20px;
+    }
+
+    #question,
+    button {
+        font-size: 0.98rem;
+    }
+}

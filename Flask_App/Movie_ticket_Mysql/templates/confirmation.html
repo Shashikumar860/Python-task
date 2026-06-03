@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmed - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="ticket-wrapper">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <i class="fa-solid fa-circle-check" style="font-size: 4rem; color: var(--color-confirmed); margin-bottom: 1rem;"></i>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Booking Successful!</h1>
+            <p style="color: var(--text-secondary);">Your ticket has been booked. Show this ticket stub at the counter.</p>
+        </div>
+
+        <!-- Cinema Ticket Component -->
+        <div class="cinema-ticket" id="cinema-ticket">
+            <!-- Ticket Header -->
+            <div class="ticket-header">
+                <div class="ticket-logo"><i class="fa-solid fa-ticket"></i> MOVIE TICKET BOOKING STUB</div>
+                <h2 class="ticket-movie-title">{{ ticket[7] }}</h2>
+                <span style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;"><i class="fa-solid fa-location-dot"></i> {{ ticket[8] }}</span>
+            </div>
+
+            <!-- Ticket Body -->
+            <div class="ticket-body">
+                <div class="ticket-grid">
+                    <div>
+                        <div class="ticket-label">Date</div>
+                        <div class="ticket-value">{{ ticket[4] }}</div>
+                    </div>
+                    <div>
+                        <div class="ticket-label">Time</div>
+                        <div class="ticket-value">{{ ticket[3]|time_12hr }}</div>
+                    </div>
+                    <div>
+                        <div class="ticket-label">Hall</div>
+                        <div class="ticket-value">{{ ticket[9] }}</div>
+                    </div>
+                    <div>
+                        <div class="ticket-label">Seats</div>
+                        <div class="ticket-value seats">{{ ticket[6] }}</div>
+                    </div>
+                    <div>
+                        <div class="ticket-label">Customer</div>
+                        <div class="ticket-value">{{ ticket[10] }}</div>
+                        {% if ticket[13] %}
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.15rem;"><i class="fa-solid fa-phone" style="font-size: 0.75rem;"></i> {{ ticket[13] }}</div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="ticket-label">Payment Method</div>
+                        <div class="ticket-value" style="color: var(--accent-gold); font-weight: 600;">{{ ticket[12] }}</div>
+                    </div>
+                    <div>
+                        <div class="ticket-label">Total Cost</div>
+                        <div class="ticket-value price">₹{{ ticket[5]|int }}</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="ticket-label">Status</div>
+                        <div class="status-badge confirmed" style="min-width: 90px;"><i class="fa-solid fa-circle-check"></i> {{ ticket[11] }}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="ticket-label">Purchase Date</div>
+                        <div class="ticket-value" style="font-size: 0.85rem; font-weight: normal; color: var(--text-secondary);">Today</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Footer -->
+            <div class="ticket-footer">
+                <div class="barcode-wrapper">
+                    <div class="mock-barcode"></div>
+                    <div class="ticket-code">Booking ID: #{{ ticket[0] }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="ticket-actions">
+            <button onclick="window.print()" class="btn-large btn-cyan" id="print-ticket-btn">
+                <i class="fa-solid fa-print"></i> Print Ticket
+            </button>
+            <a href="/movies" class="btn-large btn-secondary" id="confirm-back-btn">
+                Browse Movies
+            </a>
+            <a href="/my-bookings" class="btn-large btn-secondary" id="confirm-view-tickets-btn">
+                My Tickets
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

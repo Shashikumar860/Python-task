@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Todo App</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+
+        <h1>📝 Todo Dashboard</h1>
+
+        <a class="back-btn" href="/back">
+            Back To Home
+        </a>
+
+    </div>
+
+    <!-- ADD TODO FORM -->
+
+    <div class="form-box">
+
+        <form action="/add" method="POST">
+
+            <input
+                type="text"
+                name="task"
+                placeholder="Enter task..."
+                required
+            >
+
+            <button type="submit">
+                Add Todo
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="boxes">
+
+        <!-- INCOMPLETE TASKS -->
+
+        <div class="box">
+
+            <h2>❌ Incomplete Tasks</h2>
+
+            <ul>
+
+                {% for todo in incomplete %}
+
+                <li>
+
+                    {{ todo.task }}
+
+                    <a
+                        class="delete-btn"
+                        href="/delete/{{ todo.id }}"
+                    >
+                        Delete
+                    </a>
+
+                    <a
+                        class="complete-btn"
+                        href="/complete/{{ todo.id }}"
+                    >
+                        Complete
+                    </a>
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <!-- COMPLETE TASKS -->
+
+        <div class="box">
+
+            <h2>✅ Completed Tasks</h2>
+
+            <ul>
+
+                {% for todo in complete %}
+
+                <li>
+
+                    {{ todo.task }}
+
+                    <a
+                        class="delete-btn"
+                        href="/delete/{{ todo.id }}"
+                    >
+                        Delete
+                    </a>
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Seat Status - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 1.5rem; padding-bottom: 3rem;">
+    <!-- Unified Live Shows Dashboard Panel -->
+    <div class="show-status-panel">
+        <div class="show-status-header">
+            <h2 style="font-size: 1.8rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <i class="fa-solid fa-chart-simple" style="color: var(--accent-cyan);"></i> Live Show Status & Seat Tracker
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;">Real-time seat availability and status of running shows</p>
+        </div>
+        
+        {% if active_shows %}
+            <div class="show-status-grid">
+                {% for show in active_shows %}
+                    <div class="show-status-card" id="show-status-card-{{ show.id }}">
+                        <div class="show-status-movie-info">
+                            <div class="show-status-poster">
+                                {% if show.poster_path %}
+                                    <img src="{{ show.poster_path }}" alt="{{ show.movie_title }} Poster" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="show-status-fallback-poster" style="display: none;">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="show-status-fallback-poster" style="display: flex;">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="show-status-title-wrap">
+                                <h3 class="show-status-movie-title">{{ show.movie_title }}</h3>
+                                <span class="show-status-genre">{{ show.genre }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="show-status-details">
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fa-solid fa-building-columns"></i> Theatre</span>
+                                <span class="detail-val">{{ show.theatre_name }} ({{ show.hall }})</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fa-solid fa-calendar"></i> Date & Time</span>
+                                <span class="detail-val">{{ show.date }} @ {{ show.time|time_12hr }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fa-solid fa-ticket"></i> Ticket Price</span>
+                                <span class="detail-val" style="color: var(--accent-cyan); font-weight: 600;">₹{{ "%.2f" | format(show.price) }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="show-status-seats">
+                            <div class="seats-info-header">
+                                <span class="seats-count-text">
+                                    <strong>{{ show.remaining_seats }}</strong> / {{ show.total_seats }} Seats Left
+                                </span>
+                                {% if show.remaining_seats == 0 %}
+                                    <span class="seats-badge badge-soldout">Sold Out</span>
+                                {% elif show.remaining_seats < 25 %}
+                                    <span class="seats-badge badge-filling">Filling Fast</span>
+                                {% else %}
+                                    <span class="seats-badge badge-available">Available</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="capacity-progress-bar">
+                                {% set fill_color = 'var(--color-confirmed)' %}
+                                {% if show.remaining_seats == 0 %}
+                                    {% set fill_color = 'var(--color-cancelled)' %}
+                                {% elif show.remaining_seats < 25 %}
+                                    {% set fill_color = 'linear-gradient(90deg, #f59e0b, #d97706)' %}
+                                {% else %}
+                                    {% set fill_color = 'linear-gradient(90deg, #10b981, #059669)' %}
+                                {% endif %}
+                                <div class="capacity-progress-fill" style="width: {{ show.fill_percentage }}%; background: {{ fill_color }};"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>0% Filled</span>
+                                <span>{{ show.fill_percentage }}% Filled</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="show-status-action">
+                            {% if show.remaining_seats == 0 %}
+                                <button class="btn-card" style="background: #2d3748 !important; color: #a0aec0 !important; cursor: not-allowed; border: 1px solid #4a5568 !important; margin: 0; width: 100%;" disabled>Sold Out</button>
+                            {% else %}
+                                <a href="/book/{{ show.id }}" class="btn-card show-book-btn" id="quick-book-btn-{{ show.id }}" style="margin: 0; width: 100%; text-align: center;">Book Seats</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 4rem 1rem; background: rgba(34, 39, 54, 0.4); border-radius: 12px; border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 1rem; opacity: 0.7;"></i>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Active Shows Available</h3>
+                <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">There are no active shows scheduled at the moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

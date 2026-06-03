@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.25rem;">Admin Dashboard</h1>
+        <p style="color: var(--text-secondary);">Monitor bookings, movie revenues, and manage schedules</p>
+    </div>
+
+    <!-- Analytics Cards Grid -->
+    <div class="admin-grid">
+        <div class="admin-stat-card revenue">
+            <i class="fa-solid fa-hand-holding-rupee"></i>
+            <div class="admin-stat-info">
+                <h4>Total Revenue</h4>
+                <div class="admin-stat-val">₹{{ metrics.total_revenue|int }}</div>
+            </div>
+        </div>
+        <div class="admin-stat-card bookings">
+            <i class="fa-solid fa-ticket"></i>
+            <div class="admin-stat-info">
+                <h4>Active Bookings</h4>
+                <div class="admin-stat-val">{{ metrics.active_bookings }}</div>
+            </div>
+        </div>
+        <div class="admin-stat-card" style="border-color: rgba(239, 68, 68, 0.2);">
+            <i class="fa-solid fa-ban" style="color: var(--color-cancelled);"></i>
+            <div class="admin-stat-info">
+                <h4>Cancelled</h4>
+                <div class="admin-stat-val" style="color: var(--color-cancelled);">{{ metrics.cancelled_bookings }}</div>
+            </div>
+        </div>
+        <div class="admin-stat-card users">
+            <i class="fa-solid fa-users"></i>
+            <div class="admin-stat-info">
+                <h4>Total Users</h4>
+                <div class="admin-stat-val">{{ metrics.total_users }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Tabs -->
+    <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="movies" id="tab-btn-movies">Manage Movies</button>
+        <button class="admin-tab" data-tab="theatres" id="tab-btn-theatres">Manage Theatres</button>
+        <button class="admin-tab" data-tab="showtimes" id="tab-btn-showtimes">Manage Showtimes</button>
+        <button class="admin-tab" data-tab="revenue" id="tab-btn-revenue">Movie Revenues</button>
+        <button class="admin-tab" data-tab="bookings" id="tab-btn-bookings">All Bookings</button>
+    </div>
+
+    <!-- TAB: MANAGE MOVIES -->
+    <div class="admin-tab-content active" id="tab-movies">
+        <div class="admin-actions-bar">
+            <a href="/admin/theatre/add" class="nav-btn btn-outline" id="admin-add-theatre-btn"><i class="fa-solid fa-hotel"></i> Add Theatre</a>
+            <a href="/admin/showtime/add" class="nav-btn btn-outline" id="admin-add-showtime-btn"><i class="fa-solid fa-calendar-plus"></i> Add Showtime</a>
+            <a href="/admin/movie/add" class="nav-btn btn-gold" id="admin-add-movie-btn"><i class="fa-solid fa-plus"></i> Add New Movie</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th style="white-space: nowrap; min-width: 200px;">Movie Title</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Genre</th>
+                        <th style="white-space: nowrap; min-width: 100px;">Duration</th>
+                        <th style="white-space: nowrap; min-width: 100px;">Rating</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Showtimes</th>
+                        <th style="white-space: nowrap; min-width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if movies_list %}
+                        {% for movie in movies_list %}
+                            <tr>
+                                <td class="strong">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div style="width: 40px; height: 55px; border-radius: 4px; overflow: hidden; background: var(--bg-input); border: 1px solid var(--border-color); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                            {% if movie.poster_path %}
+                                                <img src="{{ movie.poster_path }}" alt="{{ movie.title }} Poster" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.9rem;">
+                                                    <i class="fa-solid fa-film"></i>
+                                                </div>
+                                            {% else %}
+                                                <div style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.9rem;">
+                                                    <i class="fa-solid fa-film"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <span>{{ movie.title }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ movie.genre }}</td>
+                                <td>{{ movie.duration }} min</td>
+                                <td><span class="meta-pill rating" style="padding: 0.1rem 0.4rem; font-size: 0.8rem;"><i class="fa-solid fa-star" style="color: var(--accent-gold); margin-right: 0.2rem;"></i> {{ movie.rating }}</span></td>
+                                <td>{{ movie.showtimes_count }} shows</td>
+                                <td>
+                                    <div class="admin-actions-cell">
+                                        <a href="/admin/movie/edit/{{ movie.id }}" class="btn-small btn-edit" id="edit-movie-{{ movie.id }}"><i class="fa-solid fa-pen"></i> Edit</a>
+                                        <form action="/admin/movie/delete/{{ movie.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ movie.title }}? This will delete all its showtimes and bookings.');" style="margin:0;">
+                                            <button type="submit" class="btn-small btn-delete" id="delete-movie-{{ movie.id }}"><i class="fa-solid fa-trash"></i> Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">No movies available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB: MANAGE THEATRES -->
+    <div class="admin-tab-content" id="tab-theatres">
+        <div class="admin-actions-bar">
+            <a href="/admin/theatre/add" class="nav-btn btn-gold" id="admin-add-theatre-tab-btn"><i class="fa-solid fa-plus"></i> Add New Theatre</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th style="white-space: nowrap; min-width: 250px;">Theatre Name</th>
+                        <th style="white-space: nowrap; min-width: 150px;">Location</th>
+                        <th style="white-space: nowrap; min-width: 150px;">City</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if theatres_list %}
+                        {% for theatre in theatres_list %}
+                            <tr>
+                                <td class="strong">{{ theatre[1] }}</td>
+                                <td>{{ theatre[2] }}</td>
+                                <td>{{ theatre['city'] if 'city' in theatre else (theatre[3] if theatre|length > 3 else '') }}</td>
+                                <td>
+                                    <form action="/admin/theatre/delete/{{ theatre[0] }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ theatre[1] }}? This will delete all scheduled shows and bookings at this theatre.');" style="margin:0;">
+                                        <button type="submit" class="btn-small btn-delete" id="delete-theatre-{{ theatre[0] }}"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem;">No theatres registered.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB: MANAGE SHOWTIMES -->
+    <div class="admin-tab-content" id="tab-showtimes">
+        <div class="admin-actions-bar">
+            <a href="/admin/showtime/add" class="nav-btn btn-gold" id="admin-add-showtime-tab-btn"><i class="fa-solid fa-plus"></i> Add New Showtime</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th style="white-space: nowrap; min-width: 200px;">Movie Title</th>
+                        <th style="white-space: nowrap; min-width: 180px;">Theatre</th>
+                        <th style="white-space: nowrap; min-width: 100px;">Hall</th>
+                        <th style="white-space: nowrap; min-width: 180px;">Date &amp; Time</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Base Price</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if showtimes_list %}
+                        {% for s in showtimes_list %}
+                            <tr>
+                                <td class="strong">{{ s.movie_title }}</td>
+                                <td>{{ s.theatre_name }}</td>
+                                <td>{{ s.hall }}</td>
+                                <td>{{ s.date }} @ <span style="color: var(--accent-gold); font-weight: 600;">{{ s.time|time_12hr }}</span></td>
+                                <td style="font-weight: 700; color: var(--accent-gold);">₹{{ s.price|int }}</td>
+                                <td>
+                                    <form action="/admin/showtime/delete/{{ s.id }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this showtime? All tickets booked for this show will be deleted.');" style="margin:0;">
+                                        <button type="submit" class="btn-small btn-delete" id="delete-showtime-{{ s.id }}"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">No showtimes scheduled.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB: MOVIE REVENUES -->
+    <div class="admin-tab-content" id="tab-revenue">
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th style="white-space: nowrap; min-width: 200px;">Movie Title</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Genre</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Tickets Sold</th>
+                        <th style="white-space: nowrap; min-width: 150px;">Active Bookings</th>
+                        <th style="white-space: nowrap; min-width: 180px;">Cancelled Bookings</th>
+                        <th style="white-space: nowrap; min-width: 150px;" class="price-column">Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if revenue_list %}
+                        {% for item in revenue_list %}
+                            <tr>
+                                <td class="strong">{{ item.title }}</td>
+                                <td>{{ item.genre }}</td>
+                                <td>{{ item.tickets_sold }}</td>
+                                <td>{{ item.active_bookings }}</td>
+                                <td style="color: var(--color-cancelled);">{{ item.cancelled_bookings }}</td>
+                                 <td class="price-column">₹{{ item.total_revenue|int }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">No sales data available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB: ALL BOOKINGS -->
+    <div class="admin-tab-content" id="tab-bookings">
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th style="white-space: nowrap; min-width: 80px;">Booking ID</th>
+                        <th style="white-space: nowrap; min-width: 160px;">Customer</th>
+                        <th style="white-space: nowrap; min-width: 320px;">Movie &amp; Show</th>
+                        <th style="white-space: nowrap; min-width: 80px;">Seats</th>
+                        <th style="white-space: nowrap; min-width: 80px;">Price</th>
+                        <th style="white-space: nowrap; min-width: 100px;">Payment</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Status</th>
+                        <th style="white-space: nowrap; min-width: 180px;">Update Status</th>
+                        <th style="white-space: nowrap; min-width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if bookings_list %}
+                        {% for b in bookings_list %}
+                            <tr id="admin-booking-row-{{ b.id }}">
+                                <td class="strong" style="font-size: 0.85rem; color: var(--accent-cyan); white-space: nowrap;">#{{ b.id }}</td>
+                                <td style="white-space: nowrap;">
+                                    <div style="font-weight: 600; color: #fff;">{{ b.customer_name }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ b.customer_email }}</div>
+                                    {% if b.customer_phone %}
+                                        <div style="font-size: 0.8rem; color: var(--accent-cyan); font-weight: 600;"><i class="fa-solid fa-phone" style="font-size: 0.75rem; margin-right: 0.15rem;"></i> {{ b.customer_phone }}</div>
+                                    {% endif %}
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <div style="font-size: 0.88rem; color: #fff;">
+                                        <strong style="font-weight: 600; color: var(--accent-cyan);">{{ b.movie_title }}</strong>
+                                        <span style="color: var(--text-muted); margin: 0 0.3rem;">|</span>
+                                        <span style="color: var(--text-secondary);">{{ b.theatre_name }} ({{ b.hall }})</span>
+                                        <span style="color: var(--text-muted); margin: 0 0.3rem;">|</span>
+                                        <span style="color: var(--text-muted); font-size: 0.82rem;">{{ b.show_date }} @ {{ b.show_time|time_12hr }}</span>
+                                    </div>
+                                </td>
+                                <td style="color: var(--text-primary); font-weight: 600; white-space: nowrap;">{{ b.seats }}</td>
+                                <td style="font-weight:700; color: var(--accent-gold); white-space: nowrap;">₹{{ b.total_price|int }}</td>
+                                <td style="font-size: 0.85rem; font-weight: 600; white-space: nowrap;">
+                                    {% if b.payment_type == 'Cash' %}
+                                        <span style="color: var(--accent-gold);"><i class="fa-solid fa-money-bill-wave"></i> Cash</span>
+                                    {% elif b.payment_type == 'PhonePe' %}
+                                        <span style="color: #a855f7;"><i class="fa-solid fa-wallet"></i> PhonePe</span>
+                                    {% elif b.payment_type == 'Paytm' %}
+                                        <span style="color: #0ea5e9;"><i class="fa-solid fa-wallet"></i> Paytm</span>
+                                    {% elif b.payment_type == 'Google Pay' %}
+                                        <span style="color: #3b82f6;"><i class="fa-solid fa-wallet"></i> Google Pay</span>
+                                    {% else %}
+                                        <span style="color: var(--accent-cyan);"><i class="fa-solid fa-credit-card"></i> {{ b.payment_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    {% if b.status == 'Confirmed' %}
+                                        <span class="status-badge confirmed" style="min-width: 90px; padding: 0.2rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-circle-check"></i> Confirmed</span>
+                                    {% elif b.status == 'Attended' %}
+                                        <span class="status-badge attended" style="min-width: 90px; padding: 0.2rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-user-check"></i> Attended</span>
+                                    {% else %}
+                                        <span class="status-badge cancelled" style="min-width: 90px; padding: 0.2rem 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-circle-xmark"></i> Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    <form action="/admin/update-booking-status/{{ b.id }}" method="POST" style="margin: 0; display: flex; gap: 0.3rem; align-items: center; flex-wrap: nowrap;">
+                                        <select name="status" class="status-select" id="select-status-{{ b.id }}">
+                                            <option value="Confirmed" {% if b.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                            <option value="Attended" {% if b.status == 'Attended' %}selected{% endif %}>Attended</option>
+                                            <option value="Cancelled" {% if b.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                        </select>
+                                        <button type="submit" class="nav-btn btn-gold" style="padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.8rem;" id="submit-status-{{ b.id }}">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    {% if b.status == 'Cancelled' %}
+                                        <form action="/delete-booking/{{ b.id }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this cancelled booking record from history?');" style="margin: 0;">
+                                            <button type="submit" class="btn-small btn-delete" id="admin-delete-booking-{{ b.id }}">
+                                                <i class="fa-solid fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span style="color: var(--text-muted); font-size: 0.85rem;">Active</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 2rem;">No bookings found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

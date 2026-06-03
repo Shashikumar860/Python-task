@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Gemini AI Chatbot</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <main class="app-shell">
+        <h1>Gemini AI Chatbot</h1>
+
+        <div class="controls">
+            <input
+                type="text"
+                id="question"
+                placeholder="Ask something..."
+            >
+
+            <button onclick="askGemini()">
+                Ask
+            </button>
+        </div>
+
+        <div id="response" class="answer"></div>
+    </main>
+
+    <script>
+
+        async function askGemini(){
+
+            let question =
+                document.getElementById("question").value
+
+            let response = await fetch("/ask", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    question: question
+                })
+
+            })
+
+            let data = await response.json()
+            let answerText = data.answer || "No answer available yet."
+            document.getElementById("response").textContent = answerText
+        }
+
+    </script>
+
+</body>
+
+</html>

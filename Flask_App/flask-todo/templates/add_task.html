@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Task</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <main class="content-card small-card">
+            <section class="hero-card small-hero">
+                <div>
+                    <p class="eyebrow">Add a fresh task</p>
+                    <h1>New task details</h1>
+                    <p class="hero-copy">Add a task to the FastAPI-backed list and keep your workflow on track.</p>
+                </div>
+            </section>
+
+            <form id="taskForm" class="task-form">
+                <label for="taskInput">Task title</label>
+                <input id="taskInput" type="text" placeholder="Enter your next task" autocomplete="off" />
+                <button type="submit" class="primary-btn">Save task</button>
+            </form>
+
+            <div id="statusMessage" class="status-message"></div>
+            <a class="secondary-link" href="/">← Back to dashboard</a>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

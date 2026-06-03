@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tickets - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.25rem;">My Bookings</h1>
+            <p style="color: var(--text-secondary);">Manage your upcoming shows and view ticket receipts</p>
+        </div>
+        <a href="/movies" class="nav-btn btn-gold" id="bookings-browse-btn"><i class="fa-solid fa-plus"></i> Book Another Movie</a>
+    </div>
+
+    {% if bookings %}
+        <div class="history-container">
+            {% for booking in bookings %}
+                <div class="booking-card" id="booking-card-{{ booking[0] }}">
+                    <!-- Left: Movie, Theatre, Showtime, Seats -->
+                    <div class="booking-card-details">
+                        <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700; letter-spacing: 0.05em;">BOOKING ID: #{{ booking[0] }}</span>
+                        <h3>{{ booking[10] }}</h3>
+                        
+                        <div class="booking-card-meta">
+                            <span><i class="fa-solid fa-user"></i> Ticket For: <strong style="color: #fff;">{{ booking[2] }}</strong>{% if booking[14] %} (<strong style="color: var(--accent-cyan);"><i class="fa-solid fa-phone" style="font-size: 0.75rem;"></i> {{ booking[14] }}</strong>){% endif %}</span>
+                            <span><i class="fa-solid fa-location-dot"></i> {{ booking[11] }} ({{ booking[12] }})</span>
+                            <span><i class="fa-regular fa-calendar-days"></i> {{ booking[8] }} at <strong style="color: #fff;">{{ booking[7]|time_12hr }}</strong></span>
+                            <span><i class="fa-solid fa-couch"></i> Seats: <strong style="color: var(--accent-cyan);">{{ booking[6] }}</strong></span>
+                            <span><i class="fa-solid fa-rupee-sign"></i> Paid: <strong style="color: var(--accent-gold);">₹{{ booking[4]|int }}</strong></span>
+                            <span><i class="fa-solid fa-credit-card"></i> Method: <strong style="color: var(--accent-cyan);">{{ booking[13] }}</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Center: Booking Status -->
+                    <div>
+                        {% if booking[9] == 'Confirmed' %}
+                            <span class="status-badge confirmed"><i class="fa-solid fa-circle-check"></i> Confirmed</span>
+                        {% elif booking[9] == 'Attended' %}
+                            <span class="status-badge attended"><i class="fa-solid fa-user-check"></i> Attended</span>
+                        {% else %}
+                            <span class="status-badge cancelled"><i class="fa-solid fa-circle-xmark"></i> Cancelled</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Right: Actions -->
+                    <div class="booking-card-actions">
+                        <a href="/confirmation/{{ booking[5] }}" class="nav-btn btn-outline" style="font-size: 0.85rem;" id="view-stub-btn-{{ booking[0] }}">
+                            <i class="fa-solid fa-ticket"></i> View Stub
+                        </a>
+                        
+                        {% if booking[9] == 'Confirmed' %}
+                            <form action="/cancel-booking/{{ booking[0] }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? This will release your selected seats.');" style="margin: 0;">
+                                <button type="submit" class="nav-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.85rem;" id="cancel-ticket-btn-{{ booking[0] }}">
+                                    <i class="fa-solid fa-ban"></i> Cancel Booking
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        {% if booking[9] == 'Cancelled' %}
+                            <form action="/delete-booking/{{ booking[0] }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this cancelled booking record from your history?');" style="margin: 0;">
+                                <button type="submit" class="nav-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.85rem;" id="delete-ticket-btn-{{ booking[0] }}">
+                                    <i class="fa-solid fa-trash"></i> Delete Record
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); margin-top: 2rem;">
+            <i class="fa-solid fa-receipt" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem; opacity: 0.6;"></i>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Bookings Yet</h3>
+            <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto 1.5rem auto;">You haven't booked any movies yet. Find a show and select your seats to see them here.</p>
+            <a href="/movies" class="nav-btn btn-gold" id="start-booking-btn">Book Tickets Now</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

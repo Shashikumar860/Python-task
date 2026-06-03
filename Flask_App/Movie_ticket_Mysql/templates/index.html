@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Movies - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<style>
+    /* Premium Movie Catalog Styling Upgrades */
+    .movie-card {
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease, border-color 0.4s ease !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        position: relative;
+        overflow: hidden;
+    }
+    .movie-card:hover {
+        transform: translateY(-8px) scale(1.02) !important;
+        border-color: var(--accent-gold) !important;
+        box-shadow: 0 12px 30px rgba(255, 193, 7, 0.15), 0 0 15px rgba(255, 193, 7, 0.1) !important;
+    }
+    .poster-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+    .poster-img {
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    }
+    .movie-card:hover .poster-img {
+        transform: scale(1.08) !important;
+    }
+    .search-filter-bar {
+        background: rgba(255, 255, 255, 0.02) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 10px !important;
+    }
+</style>
+
+<div class="container">
+    <div class="catalog-header" style="margin-bottom: 1.5rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.25rem;">Movies</h1>
+            <p style="color: var(--text-secondary);">Explore released shows and upcoming blockbusters</p>
+        </div>
+        
+        <form action="/movies" method="GET" class="search-filter-bar" id="movies-search-form" style="display: flex; gap: 0.75rem; align-items: center;">
+            <!-- Search field -->
+            <div class="search-box" style="flex-grow: 1;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="search" value="{{ search_query }}" class="form-input" placeholder="Search by title..." id="search-input">
+            </div>
+            
+            <!-- City filter dropdown -->
+            <div class="city-select-box" style="position: relative; display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 8px; padding: 0 0.75rem; height: 42px; min-width: 150px;">
+                <i class="fa-solid fa-city" style="color: var(--accent-gold); margin-right: 0.5rem; font-size: 0.9rem;"></i>
+                <select name="city" onchange="this.form.submit()" style="background: transparent; border: none; color: #fff; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; width: 100%; height: 100%;">
+                    <option value="" style="background: var(--bg-card); color: #fff;">All Cities</option>
+                    {% for city in cities %}
+                        <option value="{{ city }}" {% if selected_city == city %}selected{% endif %} style="background: var(--bg-card); color: #fff;">{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Hidden inputs to persist filters when searching -->
+            <input type="hidden" name="genre" value="{{ selected_genre }}" id="genre-hidden-input">
+            
+            <button type="submit" class="nav-btn btn-outline" style="height: 42px;"><i class="fa-solid fa-filter"></i> Search</button>
+        </form>
+    </div>
+
+
+
+    <!-- Featured Movie Hero Section -->
+    {% if featured_movie %}
+        <div class="movie-hero-section">
+            <!-- Backdrop Image -->
+            <div class="hero-backdrop" style="background-image: linear-gradient(to right, rgba(18, 21, 32, 0.95) 25%, rgba(18, 21, 32, 0.7) 45%, rgba(18, 21, 32, 0.2) 70%, rgba(18, 21, 32, 0.95) 98%), url('{{ featured_movie[6] if featured_movie[6] else "/static/images/welcome_theatre.png" }}');"></div>
+            <div class="hero-overlay"></div>
+            
+            <div class="hero-content-wrap">
+                <!-- Movie Info Left Column -->
+                <div class="hero-left-info">
+                    <div class="hero-meta-badge-row">
+                        <span class="hero-genre-badge">{{ featured_movie[3] }}</span>
+                        <span class="hero-rating-stars">
+                            {% set stars_count = (featured_movie[5] | float / 2) %}
+                            {% for i in range(1, 6) %}
+                                {% if stars_count >= i %}
+                                    <i class="fa-solid fa-star" style="color: #ffc107; font-size: 0.95rem; margin-right: 0.05rem;"></i>
+                                {% elif stars_count >= (i - 0.5) %}
+                                    <i class="fa-solid fa-star-half-stroke" style="color: #ffc107; font-size: 0.95rem; margin-right: 0.05rem;"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-star" style="color: rgba(255, 255, 255, 0.2); font-size: 0.95rem; margin-right: 0.05rem;"></i>
+                                {% endif %}
+                            {% endfor %}
+                            {% set ratings_count = (featured_movie[0] * 382 + 185) %}
+                            <span style="margin-left: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">({{ ratings_count }} RATINGS)</span>
+                        </span>
+                        <span class="hero-meta-text">{{ featured_movie[4] // 60 }}h {{ featured_movie[4] % 60 }}m</span>
+                        <span class="hero-meta-text">{{ featured_movie[7] }}</span>
+                    </div>
+                    
+                    <h1 class="hero-movie-title">{{ featured_movie[1] }}</h1>
+                    
+                    {% set tagline = featured_movie[2].split('.')[0] + '.' if '.' in featured_movie[2] else featured_movie[2] %}
+                    {% set synopsis = featured_movie[2].replace(tagline, '').strip() %}
+                    {% if not synopsis %}
+                        {% set synopsis = featured_movie[2] %}
+                    {% endif %}
+                    
+                    <div class="hero-tagline">{{ tagline }}</div>
+                    <p class="hero-movie-desc">{{ synopsis }}</p>
+                    
+                    <div class="hero-button-row">
+                        <a href="/movie/{{ featured_movie[0] }}" class="hero-play-btn" id="hero-book-btn">
+                            <i class="fa-solid fa-ticket" style="margin-right: 0.6rem;"></i> Book Tickets
+                        </a>
+                        <a href="/movie/{{ featured_movie[0] }}" class="hero-info-btn" id="hero-info-btn" title="About Movie">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bottom Landscape Carousel Thumbnails -->
+                {% if now_showing and now_showing|length > 1 %}
+                    <div class="hero-carousel-wrap">
+                        {% for m in now_showing %}
+                            <div class="hero-thumb-card {% if loop.first %}active{% endif %}" onclick="switchHeroMovie({{ loop.index0 }})" title="{{ m[1] }}">
+                                {% if m[6] %}
+                                    <img src="{{ m[6] }}" alt="{{ m[1] }}" class="hero-thumb-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="hero-fallback-poster" style="display: none; font-size: 1.5rem;">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="hero-fallback-poster" style="display: flex; font-size: 1.5rem;">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="hero-thumb-overlay">
+                                    <div class="hero-thumb-title">{{ m[1] }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Inline JavaScript for Hero Interaction -->
+        <script>
+            // Serialize now_showing movies array from Python to JS
+            const nowShowingMovies = [
+                {% for m in now_showing %}
+                {
+                    id: {{ m[0] }},
+                    title: {{ m[1] | tojson }},
+                    description: {{ m[2] | tojson }},
+                    genre: {{ m[3] | tojson }},
+                    duration: {{ m[4] }},
+                    rating: {{ m[5] }},
+                    poster_path: {{ m[6] | tojson if m[6] else "/static/images/welcome_theatre.png" | tojson }},
+                    language: {{ m[7] | tojson }}
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            function switchHeroMovie(index) {
+                const movie = nowShowingMovies[index];
+                if (!movie) return;
+
+                const heroBackdrop = document.querySelector('.hero-backdrop');
+                const heroLeftInfo = document.querySelector('.hero-left-info');
+
+                // Fade out content smoothly
+                heroBackdrop.style.opacity = '0';
+                heroLeftInfo.style.opacity = '0';
+
+                setTimeout(() => {
+                    // Update backdrop image
+                    const posterUrl = movie.poster_path ? movie.poster_path : '/static/images/welcome_theatre.png';
+                    heroBackdrop.style.backgroundImage = `linear-gradient(to right, rgba(18, 21, 32, 0.95) 25%, rgba(18, 21, 32, 0.7) 45%, rgba(18, 21, 32, 0.2) 70%, rgba(18, 21, 32, 0.95) 98%), url('${posterUrl}')`;
+
+                    // Update metadata and title
+                    document.querySelector('.hero-movie-title').textContent = movie.title;
+                    document.querySelector('.hero-genre-badge').textContent = movie.genre;
+
+                    // Parse tagline and synopsis from description
+                    const descParts = movie.description.split('.');
+                    const taglineText = descParts[0] ? descParts[0].trim() + '.' : '';
+                    const synopsisText = descParts.slice(1).join('.').trim();
+
+                    document.querySelector('.hero-tagline').textContent = taglineText;
+                    document.querySelector('.hero-movie-desc').textContent = synopsisText || movie.description;
+
+                    // Update duration and language
+                    const hours = Math.floor(movie.duration / 60);
+                    const mins = movie.duration % 60;
+                    const metaTextElements = document.querySelectorAll('.hero-meta-text');
+                    if (metaTextElements.length >= 2) {
+                        metaTextElements[0].textContent = `${hours}h ${mins}m`;
+                        metaTextElements[1].textContent = movie.language;
+                    }
+
+                    // Update rating stars
+                    const ratingStars = document.querySelector('.hero-rating-stars');
+                    if (ratingStars) {
+                        const starsCount = parseFloat(movie.rating) / 2;
+                        let starsHtml = '';
+                        for (let i = 1; i <= 5; i++) {
+                            if (starsCount >= i) {
+                                starsHtml += `<i class="fa-solid fa-star" style="color: #ffc107; font-size: 0.95rem; margin-right: 0.05rem;"></i>`;
+                            } else if (starsCount >= (i - 0.5)) {
+                                starsHtml += `<i class="fa-solid fa-star-half-stroke" style="color: #ffc107; font-size: 0.95rem; margin-right: 0.05rem;"></i>`;
+                            } else {
+                                starsHtml += `<i class="fa-regular fa-star" style="color: rgba(255, 255, 255, 0.2); font-size: 0.95rem; margin-right: 0.05rem;"></i>`;
+                            }
+                        }
+                        const ratingsCountValue = movie.id * 382 + 185;
+                        starsHtml += `<span style="margin-left: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">(${ratingsCountValue.toLocaleString()} RATINGS)</span>`;
+                        ratingStars.innerHTML = starsHtml;
+                    }
+
+                    // Update button links
+                    const bookBtn = document.getElementById('hero-book-btn');
+                    const infoBtn = document.getElementById('hero-info-btn');
+                    if (bookBtn) bookBtn.href = `/movie/${movie.id}`;
+                    if (infoBtn) infoBtn.href = `/movie/${movie.id}`;
+
+                    // Fade back in smoothly
+                    heroBackdrop.style.opacity = '0.6';
+                    heroLeftInfo.style.opacity = '1';
+                }, 250);
+
+                // Update active class on thumbnails
+                const cards = document.querySelectorAll('.hero-thumb-card');
+                cards.forEach((card, idx) => {
+                    if (idx === index) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+            }
+        </script>
+    {% endif %}
+
+    <!-- Genre Filters -->
+    <div class="genre-filters" style="margin-bottom: 2rem;">
+        <a href="/movies?search={{ search_query }}&genre=&city={{ selected_city }}" class="genre-pill {% if not selected_genre %}active{% endif %}">All Genres</a>
+        <a href="/movies?search={{ search_query }}&genre=Sci-Fi&city={{ selected_city }}" class="genre-pill {% if selected_genre == 'Sci-Fi' %}active{% endif %}">Sci-Fi</a>
+        <a href="/movies?search={{ search_query }}&genre=Biography&city={{ selected_city }}" class="genre-pill {% if selected_genre == 'Biography' %}active{% endif %}">Biography</a>
+        <a href="/movies?search={{ search_query }}&genre=Animation&city={{ selected_city }}" class="genre-pill {% if selected_genre == 'Animation' %}active{% endif %}">Animation</a>
+        <a href="/movies?search={{ search_query }}&genre=Action&city={{ selected_city }}" class="genre-pill {% if selected_genre == 'Action' %}active{% endif %}">Action</a>
+    </div>
+
+    <!-- SECTION 1: Now Showing -->
+    <div id="showing-movies-section" style="margin-bottom: 3.5rem;">
+        <div class="section-header-premium showing-header">
+            <div class="section-header-left">
+                <div class="header-icon-wrap icon-gold">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div class="header-text-wrap">
+                    <h2 class="section-title-premium text-gold-glow">Now Showing</h2>
+                    <p class="section-subtitle-premium">Catch the latest blockbusters on the big screen</p>
+                </div>
+            </div>
+            <div class="section-header-badge badge-gold" style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="live-dot-pulse"></span> Live
+            </div>
+        </div>
+        {% if now_showing %}
+            <div class="movie-grid">
+                {% for movie in now_showing %}
+                    <div class="movie-card" id="movie-card-{{ movie[0] }}">
+                        <span class="rating-badge">
+                            {% set stars_count = (movie[5] | float / 2) %}
+                            {% for i in range(1, 6) %}
+                                {% if stars_count >= i %}
+                                    <i class="fa-solid fa-star" style="color: var(--accent-gold); font-size: 0.85rem; margin-right: 0.05rem;"></i>
+                                {% elif stars_count >= (i - 0.5) %}
+                                    <i class="fa-solid fa-star-half-stroke" style="color: var(--accent-gold); font-size: 0.85rem; margin-right: 0.05rem;"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-star" style="color: var(--text-muted); opacity: 0.5; font-size: 0.85rem; margin-right: 0.05rem;"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span style="margin-left: 0.25rem; font-weight: 700;">{{ movie[5] }}</span>
+                        </span>
+                        <div class="poster-wrapper">
+                            {% if movie[6] %}
+                                <img src="{{ movie[6] }}" alt="{{ movie[1] }} Poster" class="poster-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="fallback-poster" style="display: none;">
+                                    <i class="fa-solid fa-film fallback-icon"></i>
+                                    <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-muted);">{{ movie[1] }}</span>
+                                </div>
+                            {% else %}
+                                <div class="fallback-poster" style="display: flex;">
+                                    <i class="fa-solid fa-film fallback-icon"></i>
+                                    <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-muted);">{{ movie[1] }}</span>
+                                </div>
+                            {% endif %}
+                            <span class="format-badge" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.85); color: var(--accent-gold); border: 1px solid var(--accent-gold); font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.4rem; border-radius: 4px; z-index: 2; text-transform: uppercase;">
+                                {{ movie['formats'] if (movie is mapping and 'formats' in movie and movie['formats']) else (movie[10] if (movie|length > 10 and movie[10]) else '2D') }}
+                            </span>
+                        </div>
+                        <div class="movie-info">
+                            <div class="movie-meta">
+                                <span><svg class="meta-svg-icon tag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.39.39 1.02.39 1.41 0l7.59-7.59c.39-.39.39-1.02 0-1.41L12 2Z"></path><path d="m7 7-.01-.01"></path></svg> {{ movie[3] }}</span>
+                                <span><svg class="meta-svg-icon clock-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> {{ movie[4] // 60 }}h {{ movie[4] % 60 }}m</span>
+                                <span><svg class="meta-svg-icon language-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6M4 14l6-6M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"></path></svg> {{ movie[7] }}</span>
+                            </div>
+                            <h3 class="movie-title">{{ movie[1] }}</h3>
+                            <p class="movie-desc">{{ movie[2] }}</p>
+                            
+
+                            <a href="/movie/{{ movie[0] }}" class="btn-card" id="movie-book-btn-{{ movie[0] }}">Book Tickets</a>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1rem; opacity: 0.7;"></i>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Movies Now Showing</h3>
+                <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">There are no movies currently scheduled for showtimes. Check our Coming Soon section!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- SECTION 2: Coming Soon -->
+    <div id="upcoming-movies-section" style="margin-top: 2.5rem;">
+        <div class="section-header-premium upcoming-header">
+            <div class="section-header-left">
+                <div class="header-icon-wrap icon-cyan">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div class="header-text-wrap">
+                    <h2 class="section-title-premium text-cyan-glow">Coming Soon</h2>
+                    <p class="section-subtitle-premium">Exciting new releases coming to theaters near you</p>
+                </div>
+            </div>
+            <div class="section-header-badge badge-cyan" style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="upcoming-dot-pulse"></span> Upcoming
+            </div>
+        </div>
+        {% if upcoming %}
+            <div class="movie-grid">
+                {% for movie in upcoming %}
+                    <div class="movie-card" id="movie-card-{{ movie[0] }}">
+                        <span class="rating-badge" style="color: var(--accent-cyan); border-color: rgba(0, 180, 216, 0.3);">
+                            <i class="fa-regular fa-calendar-days" style="margin-right: 0.15rem;"></i> {{ movie[9] }}
+                        </span>
+                        <div class="poster-wrapper">
+                            {% if movie[6] %}
+                                <img src="{{ movie[6] }}" alt="{{ movie[1] }} Poster" class="poster-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="fallback-poster" style="display: none;">
+                                    <i class="fa-solid fa-film fallback-icon"></i>
+                                    <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-muted);">{{ movie[1] }}</span>
+                                </div>
+                            {% else %}
+                                <div class="fallback-poster" style="display: flex;">
+                                    <i class="fa-solid fa-film fallback-icon"></i>
+                                    <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-muted);">{{ movie[1] }}</span>
+                                </div>
+                            {% endif %}
+                            <span class="format-badge" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.85); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.4rem; border-radius: 4px; z-index: 2; text-transform: uppercase;">
+                                {{ movie['formats'] if (movie is mapping and 'formats' in movie and movie['formats']) else (movie[10] if (movie|length > 10 and movie[10]) else '2D') }}
+                            </span>
+                        </div>
+                        <div class="movie-info">
+                            <div class="movie-meta">
+                                <span><svg class="meta-svg-icon tag-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.39.39 1.02.39 1.41 0l7.59-7.59c.39-.39.39-1.02 0-1.41L12 2Z"></path><path d="m7 7-.01-.01"></path></svg> {{ movie[3] }}</span>
+                                <span><svg class="meta-svg-icon clock-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> {{ movie[4] // 60 }}h {{ movie[4] % 60 }}m</span>
+                                <span><svg class="meta-svg-icon language-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6M4 14l6-6M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"></path></svg> {{ movie[7] }}</span>
+                            </div>
+                            <h3 class="movie-title">{{ movie[1] }}</h3>
+                            <p class="movie-desc">{{ movie[2] }}</p>
+                            <a href="/movie/{{ movie[0] }}" class="btn-card-secondary" id="movie-book-btn-{{ movie[0] }}">About Movie</a>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 1rem; opacity: 0.7;"></i>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Upcoming Movies</h3>
+                <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">We don't have any upcoming movies listed right now. Check back soon!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

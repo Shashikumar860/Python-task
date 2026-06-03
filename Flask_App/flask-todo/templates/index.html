@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <main class="content-card">
+            <section class="hero-card">
+                <div>
+                    <p class="eyebrow">Live API todo app</p>
+                    <h1>Modern TODO Dashboard</h1>
+                    <p class="hero-copy">Sync tasks with the FastAPI backend and enjoy smooth transitions, responsive cards, and animated interactions.</p>
+                </div>
+                <a class="primary-btn" href="/add-task">Create new task</a>
+            </section>
+
+            <section class="task-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Task List</h2>
+                        <span class="badge"><strong id="taskCount">0</strong> items</span>
+                    </div>
+                    <div id="statusMessage" class="status-message"></div>
+                </div>
+
+                <div id="loader" class="loader"></div>
+                <div id="tasksContainer" class="tasks-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

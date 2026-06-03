@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Showtime - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="/admin" class="back-home-link" style="margin-bottom: 2rem;" id="showtime-form-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="form-card">
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            Schedule Showtime
+        </h2>
+
+        <form action="/admin/showtime/add" method="POST" id="showtime-form">
+            <div class="form-group">
+                <label for="movie_id" class="form-label">Select Movie</label>
+                <select id="movie_id" name="movie_id" class="form-input" required>
+                    <option value="">-- Select Movie --</option>
+                    {% for movie in movies %}
+                        <option value="{{ movie[0] }}" {% if selected_movie_id == movie[0] %}selected{% endif %}>{{ movie[1] }} ({{ movie[3] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="theatre_id" class="form-label">Select Theatre</label>
+                <select id="theatre_id" name="theatre_id" class="form-input" required>
+                    <option value="">-- Select Theatre --</option>
+                    {% for theatre in theatres %}
+                        <option value="{{ theatre[0] }}">{{ theatre[1] }} ({{ theatre[2] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="date" class="form-label">Show Date</label>
+                    <input type="date" id="date" name="date" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time" class="form-label">Show Time</label>
+                    <input type="time" id="time" name="time" class="form-input" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="hall" class="form-label">Cinema Hall / Screen</label>
+                <input type="text" id="hall" name="hall" class="form-input" placeholder="e.g. Screen 1 (IMAX)" required>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="show_name" class="form-label">Show Name (e.g. Morning Show, Matinee)</label>
+                    <input type="text" id="show_name" name="show_name" class="form-input" placeholder="e.g. Regular Show" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="format" class="form-label">Movie Format(e.g., 2D, 3D, IMAX)</label>
+                    <select id="format" name="format" class="form-input" required>
+                        <option value="">-- Select Format --</option>
+                        <option value="2D">2D</option>
+                        <option value="3D">3D</option>
+                        <option value="IMAX">IMAX</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="price" class="form-label">Base Seat Price (₹)</label>
+                    <input type="number" id="price" name="price" class="form-input" placeholder="e.g. 120" step="1" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vip_surcharge" class="form-label">Gold Seat Price (₹)</label>
+                    <input type="number" id="vip_surcharge" name="vip_surcharge" class="form-input" placeholder="e.g. 180" step="1" min="0" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="recliner_surcharge" class="form-label">Recliner Seat Price (₹)</label>
+                <input type="number" id="recliner_surcharge" name="recliner_surcharge" class="form-input" placeholder="e.g. 210" step="1" min="0" required>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 700;">Select Seating Layout & Capacity</label>
+                <div class="layout-cards-grid">
+                    <!-- Standard Layout -->
+                    <label class="layout-card selected" for="layout_standard">
+                        <img src="/static/images/standard_layout.png" class="layout-card-img" alt="Standard Layout">
+                        <span class="layout-card-title">Standard Layout</span>
+                        <span class="layout-card-desc">48 Seats. Standard block layout (6 rows A-F, 8 columns) without walkways.</span>
+                        <input type="radio" id="layout_standard" name="seating_layout" value="standard" class="layout-card-radio" checked onclick="selectLayoutCard('layout_standard')">
+                    </label>
+
+                    <!-- Center Aisle Layout -->
+                    <label class="layout-card" for="layout_center_aisle">
+                        <img src="/static/images/center_aisle_layout.png" class="layout-card-img" alt="Center Aisle Layout">
+                        <span class="layout-card-title">Center Aisle Layout</span>
+                        <span class="layout-card-desc">64 Seats. Split down the middle (8 rows A-H, 8 columns with central aisle).</span>
+                        <input type="radio" id="layout_center_aisle" name="seating_layout" value="center_aisle" class="layout-card-radio" onclick="selectLayoutCard('layout_center_aisle')">
+                    </label>
+
+                    <!-- Double Aisle Layout -->
+                    <label class="layout-card" for="layout_double_aisle">
+                        <img src="/static/images/double_aisle_layout.png" class="layout-card-img" alt="Double Aisle Layout">
+                        <span class="layout-card-title">Double Aisle Layout</span>
+                        <span class="layout-card-desc">64 Seats. Side-split block (8 rows A-H, 8 columns with 2 vertical aisles).</span>
+                        <input type="radio" id="layout_double_aisle" name="seating_layout" value="double_aisle" class="layout-card-radio" onclick="selectLayoutCard('layout_double_aisle')">
+                    </label>
+
+                    <!-- Horizontal Aisle Layout -->
+                    <label class="layout-card" for="layout_horizontal_aisle">
+                        <img src="/static/images/horizontal_aisle_layout.png" class="layout-card-img" alt="Horizontal Aisle Layout">
+                        <span class="layout-card-title">Horizontal Aisle Layout</span>
+                        <span class="layout-card-desc">64 Seats. Tier-separated block (8 rows A-H with wide gap between Silver & Gold).</span>
+                        <input type="radio" id="layout_horizontal_aisle" name="seating_layout" value="horizontal_aisle" class="layout-card-radio" onclick="selectLayoutCard('layout_horizontal_aisle')">
+                    </label>
+
+                    <!-- Hybrid Aisle Layout -->
+                    <label class="layout-card" for="layout_hybrid_aisle">
+                        <img src="/static/images/hybrid_aisle_layout.png" class="layout-card-img" alt="Hybrid Aisle Layout">
+                        <span class="layout-card-title">Hybrid Aisle Layout</span>
+                        <span class="layout-card-desc">64 Seats. Silver & Gold rows feature a central aisle walkway, while the Recliner row is contiguous.</span>
+                        <input type="radio" id="layout_hybrid_aisle" name="seating_layout" value="hybrid_aisle" class="layout-card-radio" onclick="selectLayoutCard('layout_hybrid_aisle')">
+                    </label>
+                </div>
+            </div>
+
+            <script>
+                function selectLayoutCard(id) {
+                    // Remove selected class from all cards
+                    document.querySelectorAll('.layout-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    // Add selected class to chosen card
+                    const radio = document.getElementById(id);
+                    if (radio) {
+                        radio.checked = true;
+                        radio.closest('.layout-card').classList.add('selected');
+                    }
+                }
+            </script>
+
+            <button type="submit" class="nav-btn btn-gold btn-block" style="padding: 0.8rem;" id="showtime-submit-btn">
+                <i class="fa-solid fa-calendar-plus"></i> Schedule Showtime
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

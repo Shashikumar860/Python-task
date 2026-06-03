@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper" style="min-height: calc(85vh - 100px); display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
+    <!-- Two-Column Sign Up Panel -->
+    <div class="auth-card" style="width: 100%; max-width: 850px; background: linear-gradient(135deg, rgba(34, 39, 54, 0.9) 0%, rgba(20, 24, 35, 0.97) 100%), url('/static/images/global_background.png') no-repeat center center; background-size: cover; border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; padding: 0;">
+        
+        <!-- Left Column: Premium Promotional Banner -->
+        <div class="auth-banner" style="background: linear-gradient(135deg, rgba(248, 68, 100, 0.15) 0%, rgba(0, 180, 216, 0.05) 100%), url('/static/images/login_cinema_art.png'); background-size: cover; background-position: center; padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-color); position: relative;">
+            <!-- Dark Blur Overlay for Readability -->
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 21, 32, 0.85); z-index: 1;"></div>
+            
+            <div style="position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+                <div>
+                    <!-- Brand logo / symbol -->
+                    <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                        <i class="fa-solid fa-ticket" style="color: var(--accent-gold); text-shadow: var(--shadow-gold);"></i> Movie Ticket Booking
+                    </div>
+                    
+                    <h2 style="font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 1.5rem; color: #fff; font-family: var(--font-display);">
+                        Unlock the <span style="background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ultimate Cinema</span> Journey
+                    </h2>
+                    
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem;">
+                        Create an account to browse showtimes, secure premium seats, rate movies, and manage your booking history.
+                    </p>
+                </div>
+                
+                <!-- Benefit list -->
+                <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: auto;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(248, 68, 100, 0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-gold); flex-shrink: 0;">
+                            <i class="fa-solid fa-chair" style="font-size: 0.95rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">Premium Seat Selection</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Select standard, gold, or luxury recliners.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 180, 216, 0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); flex-shrink: 0;">
+                            <i class="fa-solid fa-star" style="font-size: 0.95rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">Float Movie Ratings</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Read and write ratings in precise decimals.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(168, 85, 247, 0.15); display: flex; align-items: center; justify-content: center; color: #a855f7; flex-shrink: 0;">
+                            <i class="fa-solid fa-clock-rotate-left" style="font-size: 0.95rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">Booking History Dashboard</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Keep track of upcoming and completed shows.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Sign Up Form -->
+        <div style="padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: center; position: relative;">
+            <div class="auth-header" style="text-align: left; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Create Account</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Join Movie Ticket Booking to start booking tickets</p>
+            </div>
+
+            <form action="/register" method="POST" id="register-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="username" class="form-label" style="font-size: 0.8rem;">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="e.g. cinemafan" required autocomplete="username" style="padding: 0.7rem 1rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="email" class="form-label" style="font-size: 0.8rem;">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="e.g. user@example.com" required autocomplete="email" style="padding: 0.7rem 1rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="password" class="form-label" style="font-size: 0.8rem;">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required autocomplete="new-password" style="padding: 0.7rem 1rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="confirm_password" class="form-label" style="font-size: 0.8rem;">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="••••••••" required autocomplete="new-password" style="padding: 0.7rem 1rem;">
+                </div>
+
+                <button type="submit" class="nav-btn btn-gold btn-block" id="register-submit-btn" style="margin-top: 0.75rem; padding: 0.8rem 1.5rem; font-size: 1rem; width: 100%;">
+                    Register
+                </button>
+            </form>
+
+            <div class="auth-footer" style="text-align: left; margin-top: 2rem; font-size: 0.9rem; color: var(--text-secondary);">
+                Already have an account? <a href="/login" id="register-to-login-link" style="color: var(--accent-cyan); font-weight: 600;">Log In here</a>
+                <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <a href="/" class="back-home-link" id="register-back-home" style="margin: 0; color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Responsive Styling for Two-Column layout -->
+<style>
+@media (max-width: 768px) {
+    .auth-card {
+        grid-template-columns: 1fr !important;
+    }
+    .auth-banner {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

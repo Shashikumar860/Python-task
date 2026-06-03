@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Theatre - Movie Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="/admin" class="back-home-link" style="margin-bottom: 2rem;" id="theatre-form-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="form-card">
+        <h2 style="font-size: 2rem; margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            Add New Theatre
+        </h2>
+
+        <form action="/admin/theatre/add" method="POST" id="theatre-form">
+            <div class="form-group">
+                <label for="name" class="form-label">Theatre Name</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Cineplex Premium" required>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="location" class="form-label">Location / Area</label>
+                    <input type="text" id="location" name="location" class="form-input" placeholder="e.g. Downtown Mall" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" id="city" name="city" class="form-input" placeholder="e.g. Mumbai" required>
+                </div>
+            </div>
+
+            <button type="submit" class="nav-btn btn-gold btn-block" style="padding: 0.8rem;" id="theatre-submit-btn">
+                <i class="fa-solid fa-hotel"></i> Add Theatre Location
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
